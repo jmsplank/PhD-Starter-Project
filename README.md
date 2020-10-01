@@ -6,7 +6,7 @@ Code written in Python 3.8.2.
 `source env/bin/activate`  
 `pip install -r requirements.txt`
 
-### Modifications to pyspedaS
+### Modifications to pyspedas
 
 The `local_data_dir` for mms was changed to point to mms_data folder inside the project:
 
