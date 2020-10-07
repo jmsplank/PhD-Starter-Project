@@ -18,6 +18,11 @@ fgm_all = pyspedas.mms.fgm(
     trange=trange, probe=["1", "2", "3", "4"], data_rate=data_rate, time_clip=True
 )
 
+# Load EDP data (e)
+mms_edp = pyspedas.mms.edp(
+    trange=trange, probe=probe, data_rate=data_rate, time_clip=True
+)
+
 # Merge Ion And Electron Velocities
 store_data(
     "ion_e_vel_merge", data=["mms1_des_bulkv_gse_brst", "mms1_dis_bulkv_gse_brst"]
@@ -75,7 +80,7 @@ J_times = (
 )  # generate time 'x' array
 store_data("mms1_fpi_J", data={"x": J_times, "y": J})  # store as tplot var
 
-# panel (f) - J in perp-para directions (using dot and cross products)
+# panel (d) - J in perp-para directions (using dot and cross products)
 
 # Para
 # get magnetic field
@@ -91,5 +96,42 @@ dotJB = np.array(
 crossJB = np.cross(divB, mag_scaleToUnit)  # compute cross product
 crossJB = np.linalg.norm(crossJB, axis=1)  # get magnitude of cross product
 
+# panel (f)
+# E' = E + V_e x B
 
-tplot(["mms1_fgm_b_gse_brst_l2", "ion_e_vel_merge", "mms_all_curlB_abs", "mms1_fpi_J"])
+# Cross product
+pyspedas.tinterpol(
+    ["mms1_des_bulkv_gse_brst", "mms1_fgm_b_gse_brst_l2"],
+    "mms1_edp_dce_gse_brst_l2",
+    newname=["v_e-itrpE", "B-itrpE"],
+)
+v_e_itrpE = data_quants["v_e-itrpE"].values * 1000
+mag_itrpE = data_quants["B-itrpE"].values[:, :3] * 1e-9
+crossVeB = np.cross(v_e_itrpE, mag_itrpE) * 1e3
+print(v_e_itrpE)
+print(mag_itrpE)
+E = data_quants["mms1_edp_dce_gse_brst_l2"].values
+E_time = data_quants["mms1_edp_dce_gse_brst_l2"].coords["time"].values
+E_prime = E + crossVeB
+
+store_data("EPrime", data={"x": E_time, "y": E_prime})
+
+
+# panel (g)
+# heating measure J.E'
+pyspedas.tinterpol("curlB", "EPrime")
+J_interpEPrime = data_quants["curlB-itrp"]
+heating = np.array([np.dot(i, j) for i, j in zip(J_interpEPrime, E_prime)])
+store_data("heating", data={"x": E_time, "y": heating})
+
+tplot(
+    [
+        "mms1_fgm_b_gse_brst_l2",
+        "ion_e_vel_merge",
+        "mms_all_curlB_abs",
+        "mms1_fpi_J",
+        "mms1_edp_dce_gse_brst_l2",
+        "EPrime",
+        "heating",
+    ]
+)
