@@ -1,0 +1,35 @@
+* Minimising residual
+  By calculating the shock normal using various different methods
+  and then taking the sum of the differences between the calculated
+  normal + the result from the Johlander paper - generate a scalar
+  residual metric that can be used to judge the quality of the
+  calculation.
+
+** Table of results
+| upstream       | downstream     |  n_MC | n_MX3 | n_MX3 | n_MX3 |
+|----------------+----------------+-------+-------+-------+-------|
+| 11:44:15+3.9s  | 11:45:10-3.9s  | -0.44 | -0.02 | -0.02 | -0.02 |
+| 11:44:15+5.9s  | 11:45:10-5.9s  | -0.31 | -0.04 | -0.04 | -0.04 |
+| 11:44:15+7.8s  | 11:45:10-7.8s  | -0.64 | -0.07 | -0.06 | -0.06 |
+| 11:44:15+9.8s  | 11:45:10-9.8s  | -0.41 | -0.07 | -0.07 | -0.07 |
+| 11:44:15+11.7s | 11:45:10-11.7s | -0.44 | -0.10 | -0.09 | -0.09 |
+| 11:44:15+13.7s | 11:45:10-13.7s | -0.34 | -0.12 | -0.12 | -0.12 |
+| 11:44:15+15.6s | 11:45:10-15.6s | -0.38 | -0.12 | -0.11 | -0.11 |
+| 11:44:15+17.6s | 11:45:10-17.6s | -0.47 | -0.11 | -0.10 | -0.09 |
+| 11:44:15+19.5s | 11:45:10-19.5s | -0.61 | -0.07 | -0.06 | -0.06 |
+| 11:44:15+21.5s | 11:45:10-21.5s | -0.75 | -0.08 | -0.07 | -0.06 |
+
+* Comparison of methods for finding shock normal
+  Comparison of Timing analysis (cross-correlation), coplanarity
+  method, and pybowshock model.
+
+  | Model                          |     X |     Y |      Z | Residual |
+  | Johlander result               |  0.88 |  0.46 |  -0.11 |        0 |
+  | Timing Analysis                | 0.876 | 0.376 |  0.302 |    0.324 |
+  | Coplanarity (MX3)              | 0.888 | 0.443 | -0.122 |     0.02 |
+  | Model (BS: Peredo)             | 0.931 | 0.364 | -0.027 |    0.137 |
+  | Model (BS: Slavin & Holzer)    | 0.938 | 0.347 | -0.025 |    0.153 |
+  | Model (BS: Fairfield 4 deg)    | 0.920 | 0.391 | -0.028 |    0.114 |
+  | Model (BS: Fairfield no 4 deg) | 0.910 | 0.414 | -0.029 |    0.098 |
+  | Model (BS: Formisano)          | 0.927 | 0.375 | -0.029 |    0.127 |
+  | Model (BS: Farris et al.)      | 0.927 | 0.373 | -0.027 |    0.130 |

@@ -66,19 +66,19 @@ for i in np.linspace(500, 2750, 10, dtype=int):
     cross_dBdV = np.cross(delta_B_ud, delta_v_ud)
     n_MX3 = np.cross(cross_dBdV, delta_B_ud) / np.linalg.norm(
         np.cross(cross_dBdV, delta_B_ud))
-    resid_MX3 = np.sum(n_MX3 - IDEAL)
+    resid_MX3 = np.linalg.norm(n_MX3 - IDEAL)
 
-    print(
-        f'''|11:44:15+{time[i]-time[0]:0.1f}s | 11:45:10-{time[-1]-time[-i]:0.1f}s | {resid_MC:0.2f} | {resid_MX1:0.2f} | {resid_MX2:0.2f} | {resid_MX3:0.2f} |'''
-    )
-#     print(f'''Using first and last {i} indices to average:
-#     Corresponds to 11:44:15+{time[i]-time[0]:0.1f}s and 11:45:10-{time[-1]-time[-i]:0.1f}s
-#     n_MC:            ({' '.join([f'{i:0.3f}' for i in n_MC])})
-#         Residual:    {resid_MC:0.2f}
-#     n_MX1:           ({' '.join([f'{i:0.3f}' for i in n_MX1])})
-#         Residual:    {resid_MX1:0.2f}
-#     n_MX2:           ({' '.join([f'{i:0.3f}' for i in n_MX2])})
-#         Residual:    {resid_MX2:0.2f}
-#     n_MX3:           ({' '.join([f'{i:0.3f}' for i in n_MX3])})
-#         Residual:    {resid_MX3:0.2f}
-# ''')
+    # print(
+    #     f'''|11:44:15+{time[i]-time[0]:0.1f}s | 11:45:10-{time[-1]-time[-i]:0.1f}s | {resid_MC:0.2f} | {resid_MX1:0.2f} | {resid_MX2:0.2f} | {resid_MX3:0.2f} |'''
+    # )
+    print(f'''Using first and last {i} indices to average:
+    Corresponds to 11:44:15+{time[i]-time[0]:0.1f}s and 11:45:10-{time[-1]-time[-i]:0.1f}s
+    n_MC:            ({' '.join([f'{i:0.3f}' for i in n_MC])})
+        Residual:    {resid_MC:0.2f}
+    n_MX1:           ({' '.join([f'{i:0.3f}' for i in n_MX1])})
+        Residual:    {resid_MX1:0.2f}
+    n_MX2:           ({' '.join([f'{i:0.3f}' for i in n_MX2])})
+        Residual:    {resid_MX2:0.2f}
+    n_MX3:           ({' '.join([f'{i:0.3f}' for i in n_MX3])})
+        Residual:    {resid_MX3:0.2f}
+''')

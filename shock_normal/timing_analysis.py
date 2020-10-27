@@ -6,7 +6,7 @@ import pyspedas
 from pytplot import data_quants
 
 # Load data
-trange = ["2015-10-07/11:44:25", "2015-10-07/11:44:50"]
+trange = ["2015-10-07/11:44:35", "2015-10-07/11:44:45"]
 probe = ["1", "2", "3", "4"]
 data_rate = "brst"
 mms_fgm = pyspedas.mms.fgm(trange=trange,
