@@ -2,20 +2,32 @@
 
 Code written in Python 3.8.2.
 
-`python3 -m venv env`  
-`source env/bin/activate`  
-`pip install -r requirements.txt`
-
-### Modifications to pyspedas
-
-The `local_data_dir` for mms was changed to point to mms_data folder inside the project:
-
+1. Create a virtual environment:
+```bash
+pip3 install virtualenvwrapper
+source virtualenvwrapper.sh
+mkvirtualenv PhD-Starter-Project-env
+workon PhD-Starter-Project-env
 ```
-Change: PhD-Starter-Project/env/lib/python3.8/site-packages/pyspedas/mms/mms_config.py
-Line 3:
-CONFIG = {'local_data_dir': '<PATH_TO_REPO>/PhD-Starter-Project/mms_data',
+
+2. Clone repository:
+```bash
+git clone https://github.com/jmsplank/PhD-Starter-Project
+cd PhD-Starter-Project
 ```
+
+3. Install Requirements (Note: pybowshock will not install without permission)
+```bash
+pip install -r requirements.txt
+```
+
+4. (Optional) Modify pyspedas download directory
+```bash
+cd ~/.virtualenvs/PhD-Starter-Porject-env/lib/python3.8/site-packages/pyspedas/mms/
+vi mms_config.py
+```
+And modify the `local_data_dir` parameter (Note: Use full path as ~ <HOME> etc. may not work)
 
 ## Running the code
 
-`python reproduce_fig_2.py`
+Most scripts are self contained. Use `python <PATH_TO_SCRIPT>` to run the script. E.g. `python shock_normal/timing_analysis.py`
