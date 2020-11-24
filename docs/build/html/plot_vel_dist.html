@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plot_vel_dist module &#8212; PhD Starter Project 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="plotlyApplied module" href="plotlyApplied.html" />
+    <link rel="prev" title="plot_distribution module" href="plot_distribution.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-plot_vel_dist">
+<span id="plot-vel-dist-module"></span><h1>plot_vel_dist module<a class="headerlink" href="#module-plot_vel_dist" title="Permalink to this headline">¶</a></h1>
+<p>1st attempt at converting velocities. Deprecated.</p>
+<dl class="py function">
+<dt id="plot_vel_dist.energy_to_velocity">
+<code class="sig-prename descclassname">plot_vel_dist.</code><code class="sig-name descname">energy_to_velocity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vec</span></em>, <em class="sig-param"><span class="n">species</span><span class="o">=</span><span class="default_value">'i'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#plot_vel_dist.energy_to_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts energy components in GSE to velocity.</p>
+<p>E = gamma mc**2
+Let Er = m/c**2 &lt;- Rest Mass energy
+=&gt; v = c * sqrt(1-1/((E/Er + 1)^2))</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="plot_vel_dist.polar_to_GSE">
+<code class="sig-prename descclassname">plot_vel_dist.</code><code class="sig-name descname">polar_to_GSE</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">E</span></em>, <em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">phi</span></em><span class="sig-paren">)</span><a class="headerlink" href="#plot_vel_dist.polar_to_GSE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts MMS angles to energy components in GSE XYZ.
+phi=0 -&gt; GSE +X
+theta = 0 -&gt; GSE +Z</p>
+<p>equations:
+x = r sin(theta) cos(phi)
+y = r sin(theta) sin(phi)
+z = r cos(theta)</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">PhD Starter Project</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">distribution_function</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="animate_velocity.html">animate_velocity module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gen_pitch_ang.html">gen_pitch_ang module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interpol.html">interpol module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_distribution.html">plot_distribution module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">plot_vel_dist module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotlyApplied.html">plotlyApplied module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rotate.html">rotate module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="t.html">t module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing_fastInterp.html">testing_fastInterp module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing_itrp.html">testing_itrp module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">distribution_function</a><ul>
+      <li>Previous: <a href="plot_distribution.html" title="previous chapter">plot_distribution module</a></li>
+      <li>Next: <a href="plotlyApplied.html" title="next chapter">plotlyApplied module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, James Plank.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/plot_vel_dist.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
