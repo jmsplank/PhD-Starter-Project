@@ -1,6 +1,6 @@
 ## Install Requirements
 
-Code written in Python 3.8.2.
+Code written in Python 3.8.2. Assume using `pip` to install dependencies, if not you're on your own. All dependencies are listed in `requirements.txt`.
 
 1. Create a virtual environment:
 ```bash
