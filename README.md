@@ -16,7 +16,7 @@ git clone https://github.com/jmsplank/PhD-Starter-Project
 cd PhD-Starter-Project
 ```
 
-3. Install Requirements (Note: pybowshock will not install without permission)
+3. Install Requirements
 ```bash
 pip install -r requirements.txt
 ```
@@ -31,3 +31,7 @@ And modify the `local_data_dir` parameter (Note: Use full path as ~ <HOME> etc. 
 ## Running the code
 
 Most scripts are self contained. Use `python <PATH_TO_SCRIPT>` to run the script. E.g. `python shock_normal/timing_analysis.py`
+
+## Generating animations
+
+Code for velocity distribution animations is in distribution_funciton/animate_velocity.py. Run it with `python distribution_function/animate_velocity.py`. There's no input args yet so changing things like the time range has to be done manually inside the script.
