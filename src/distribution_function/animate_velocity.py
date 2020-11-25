@@ -125,7 +125,7 @@ def generate_frame(bins, e_bins, theta, phi, i=0, frange=None):
     cwd = os.getcwd()
     # Check if running from inside distribution_function or project dir
     if cwd.split("/")[-1] != "distribution_function":
-        cwd += "/distribution_function"
+        cwd += "/src/distribution_function"
     # Check if vertices and weights have already been generated
     if cwd + "/vtx.npy" and cwd + "/wts.npy" in glob.glob(cwd + "/*.npy"):
         print(f"IT{i:02d}: Saved vtx and wts found. Loading...")
@@ -214,7 +214,9 @@ def get_e_bins(loc="centre"):
 if __name__ == "__main__":
     print("Loading data.")
     # Load data
-    trange = ["2015-10-07/11:44:34", "2015-10-07/11:44:49"]
+    trange = ["2015-11-27/06:02:12", "2015-11-27/06:03:05"]
+    # trange = ["2015-10-07/11:44:34", "2015-10-07/11:44:49"]
+    # 27 November 2015, 06:01:44
     # probe = ["1", "2", "3", "4"]
     probe = "4"
     data_rate = "brst"
@@ -264,7 +266,7 @@ if __name__ == "__main__":
         return np.swapaxes(generate_frame(v_bins, e_bins, theta, phi, i=i).T, 0, 1)
 
     # Output file name
-    fname = "animate.mp4"
+    fname = "animateQuasPara.mp4"
     # Min isosurface, max ..., and num of surfaces
     isomin, isomax, isosurf = 0, 1, 10
     # Initalise plot with first frame
