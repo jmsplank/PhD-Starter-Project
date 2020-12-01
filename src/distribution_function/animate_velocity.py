@@ -14,6 +14,7 @@ import numpy as np
 import pyspedas
 import pyvista
 import vtk
+from vtk.util import numpy_support
 from pytplot import data_quants
 from scipy.ndimage import gaussian_filter
 from sklearn.preprocessing import scale
@@ -265,111 +266,183 @@ if __name__ == "__main__":
         """
         return np.swapaxes(generate_frame(v_bins, e_bins, theta, phi, i=i).T, 0, 1)
 
-    # Output file name
-    fname = "animateQuasPara.mp4"
-    # Min isosurface, max ..., and num of surfaces
-    isomin, isomax, isosurf = 0, 1, 10
-    # Initalise plot with first frame
+    def rescale(mesh):
+        mesh.dimensions = meshData.shape
+        mesh.origin = (v_bins[0], v_bins[0], v_bins[0])
+        mesh.spacing = tuple([np.diff(v_bins)[0]] * 3)
+
     meshData = gnfrm(0)
-    # Generate pyvista object from np array
     mesh = pyvista.wrap(meshData)
-    # Modify assumed dimensions (should do nothing)
-    mesh.dimensions = meshData.shape
-    # pyvista origin is min value on each axis (bottom left)
-    mesh.origin = (v_bins[0], v_bins[0], v_bins[0])
-    # Coordinates determined by origin+spacing
-    mesh.spacing = tuple([np.diff(v_bins)[0]] * 3)
-
-    # Generate isosurfaces from distribution
-    contour = mesh.contour(np.linspace(isomin, isomax, isosurf))
-
-    # White BG, bigger labels etc...
+    rescale(mesh)
     pyvista.set_plot_theme("document")
-    # Create 2x2 plot
-    plotter = pyvista.Plotter(shape=(2, 2))
-    # Tell pyvista to use imageio-ffmpeg to generate movie
-    # Frame rate = inverse of time step
-    plotter.open_movie(
-        fname, framerate=1.0 / (time_dist[1] - time_dist[0]).total_seconds()
-    )
+    plotter = pyvista.Plotter()
+    plotter.show_grid()
+    plotter.add_axes()
+    isomin, isomax, isosurf = 0, 1, 10
+    contour = mesh.contour(np.linspace(isomin, isomax, isosurf))
+    plotter.add_mesh(contour, opacity="linear", cmap="fire")
+    plotter.add_mesh(mesh.outline_corners())
 
-    def plot_init():
-        """Commands that need to be run to initialise each subplot."""
-        plotter.show_grid()
-        plotter.add_axes()
-        # Uncomment below to change method of rendering opacity
-        # plotter.enable_depth_peeling()
+    def compress(data, axis):
+        axis = ["yz", "xz", "xy"].index(axis)
+        compressed = np.mean(data, axis=axis)
+        # slc = [slice(None)] * 3
+        # slc[axis] = 0
+        # out = np.zeros(data.shape)
+        # out[slc] = compressed
+        return compressed
 
-        # Add contour mesh to plot
-        # cmap keywords requires colorcet (pip install colorcet)
-        plotter.add_mesh(contour, opacity="linear", cmap="fire")
-        # Add bounding box
-        plotter.add_mesh(mesh.outline_corners())
+    def edgePlane(axis, axisVal):
+        axis = ["yz", "xz", "xy"].index(axis)
+        dirn = np.zeros(3)
+        dirn[axis] = 1
+        center = np.zeros(3)
+        center[axis] = axisVal[0]
+        return {
+            "center": tuple(center),
+            "direction": tuple(dirn),
+            "i_size": abs(axisVal[0]) + abs(axisVal[-1]),
+            "j_size": abs(axisVal[0]) + abs(axisVal[-1]),
+            "i_resolution": axisVal.shape[0],
+            "j_resolution": axisVal.shape[0],
+        }
 
-    # Camera position
-    # [[pos_x, pos_y, pos_z], [look_at_x, ..y, ..z], [up_direction_x, ..y, ..z]]
-    cam = np.array(
-        [
-            [7125.103749987386, 7125.103749987386, 7125.103749987386],
-            [0.0, 0.0, 0.0],
-            [0.0, 0.0, 1.0],
-        ]
-    )
-    replace_arr = np.ones(cam.shape)  # helps move camera to all 4 top-corners
-    plot_init()
-    plotter.camera_position = cam * replace_arr
-    plotter.subplot(0, 1)
-    # Add the time
-    timeText = plotter.add_text(time_dist[0].strftime(r"%Y/%m/%d-%H:%M:%S.%f"))
-    # Move camera to -y
-    replace_arr[0, 1] = -1
-    plotter.camera_position = cam * replace_arr
-    plot_init()
-    # Move cam to +y
-    replace_arr[0, 1] = 1
-    # Move cam to -x
-    replace_arr[0, 0] = -1
-    plotter.subplot(1, 0)
-    plotter.camera_position = cam * replace_arr
-    plot_init()
-    # Move cam to -y
-    replace_arr[0, 1] = -1
-    plotter.subplot(1, 1)
-    plotter.camera_position = cam * replace_arr
-    plot_init()
+    grid = numpy_support.numpy_to_vtk(num_array=compress(meshData, "xy"))
+    print(grid)
+    grid = pyvista.PolyData(grid)
+    plotter.add_mesh(grid)
 
-    # Opens an interactive window. Fine-tune camera angles before generating movie
-    # Controls: https://docs.pyvista.org/plotting/plotting.html
+    print(data2[0])
+    # plotter.add_mesh(data2)
+    # print(edgePlane("xy", v_bins))
+    # plane_xy = pyvista.Plane(**edgePlane("xy", v_bins))
+    # print(plane_xy.points[10])
+    # plane_xy.points = compress(meshData, "xy")
+    # plane_xz = pyvista.Plane(**edgePlane("xz", v_bins))
+    # plane_yz = pyvista.Plane(**edgePlane("yz", v_bins))
+    # plotter.add_mesh(plane_xy, show_edges=True)
 
-    print('Orient the view, then press "q" to close window and produce movie')
-    camera = plotter.show(auto_close=False)
-    print(camera)
-    plotter.write_frame()
+    # mesh_xy = compress(meshData, "xy")
+    # mesh_xz = compress(meshData, "xz")
+    # mesh_yz = compress(meshData, "yz")
+    # mesh_xy = pyvista.wrap(mesh_xy)
+    # mesh_xz = pyvista.wrap(mesh_xz)
+    # mesh_yz = pyvista.wrap(mesh_yz)
+    # rescale(mesh_xy)
+    # rescale(mesh_xz)
+    # rescale(mesh_yz)
+    # contour_xy = mesh_xy.contour(np.linspace(isomin, isomax, isosurf))
+    # contour_xz = mesh_xz.contour(np.linspace(isomin, isomax, isosurf))
+    # contour_yz = mesh_yz.contour(np.linspace(isomin, isomax, isosurf))
+    # plotter.add_mesh(contour_xy)
 
-    frames = raw_dist.shape[0]
-    for i in range(1, frames):
-        # Replace mesh values with new ones from next frame
-        mesh.point_arrays["values"] = gnfrm(i).flatten(order="F")
-        # Overwrite contours by regnerating with new data
-        contour.overwrite(mesh.contour(np.linspace(isomin, isomax, isosurf)))
-        plotter.subplot(0, 0)
-        plotter.update()
-        plotter.subplot(0, 1)
-        # Update time
-        timeText.ClearAllTexts()
-        timeText.SetText(
-            vtk.vtkCornerAnnotation.UpperLeft,
-            time_dist[i].strftime(r"%Y/%m/%d-%H:%M:%S.%f"),
-        )
-        plotter.update()
-        plotter.subplot(1, 0)
-        plotter.update()
-        plotter.subplot(1, 1)
-        plotter.update()
-        plotter.write_frame()
+    plotter.show()
 
-    # Check output against original (using plotly) method by
-    # commenting out all above animation code and uncommenting
-    # below
-    # data = generate_frame(v_bins, e_bins, theta, phi, i=0).T
-    # pA.plotVol(data, v_bins)
+    # # Output file name
+    # fname = "animateQuasPara.mp4"
+    # # Min isosurface, max ..., and num of surfaces
+    # isomin, isomax, isosurf = 0, 1, 10
+    # # Initalise plot with first frame
+    # meshData = gnfrm(0)
+    # # Generate pyvista object from np array
+    # mesh = pyvista.wrap(meshData)
+    # # Modify assumed dimensions (should do nothing)
+    # mesh.dimensions = meshData.shape
+    # # pyvista origin is min value on each axis (bottom left)
+    # mesh.origin = (v_bins[0], v_bins[0], v_bins[0])
+    # # Coordinates determined by origin+spacing
+    # mesh.spacing = tuple([np.diff(v_bins)[0]] * 3)
+
+    # # Generate isosurfaces from distribution
+    # contour = mesh.contour(np.linspace(isomin, isomax, isosurf))
+
+    # # White BG, bigger labels etc...
+    # pyvista.set_plot_theme("document")
+    # # Create 2x2 plot
+    # plotter = pyvista.Plotter(shape=(2, 2))
+    # # Tell pyvista to use imageio-ffmpeg to generate movie
+    # # Frame rate = inverse of time step
+    # plotter.open_movie(
+    #     fname, framerate=1.0 / (time_dist[1] - time_dist[0]).total_seconds()
+    # )
+
+    # def plot_init():
+    #     """Commands that need to be run to initialise each subplot."""
+    #     plotter.show_grid()
+    #     plotter.add_axes()
+    #     # Uncomment below to change method of rendering opacity
+    #     # plotter.enable_depth_peeling()
+
+    #     # Add contour mesh to plot
+    #     # cmap keywords requires colorcet (pip install colorcet)
+    #     plotter.add_mesh(contour, opacity="linear", cmap="fire")
+    #     # Add bounding box
+    #     plotter.add_mesh(mesh.outline_corners())
+
+    # # Camera position
+    # # [[pos_x, pos_y, pos_z], [look_at_x, ..y, ..z], [up_direction_x, ..y, ..z]]
+    # cam = np.array(
+    #     [
+    #         [7125.103749987386, 7125.103749987386, 7125.103749987386],
+    #         [0.0, 0.0, 0.0],
+    #         [0.0, 0.0, 1.0],
+    #     ]
+    # )
+    # replace_arr = np.ones(cam.shape)  # helps move camera to all 4 top-corners
+    # plot_init()
+    # plotter.camera_position = cam * replace_arr
+    # plotter.subplot(0, 1)
+    # # Add the time
+    # timeText = plotter.add_text(time_dist[0].strftime(r"%Y/%m/%d-%H:%M:%S.%f"))
+    # # Move camera to -y
+    # replace_arr[0, 1] = -1
+    # plotter.camera_position = cam * replace_arr
+    # plot_init()
+    # # Move cam to +y
+    # replace_arr[0, 1] = 1
+    # # Move cam to -x
+    # replace_arr[0, 0] = -1
+    # plotter.subplot(1, 0)
+    # plotter.camera_position = cam * replace_arr
+    # plot_init()
+    # # Move cam to -y
+    # replace_arr[0, 1] = -1
+    # plotter.subplot(1, 1)
+    # plotter.camera_position = cam * replace_arr
+    # plot_init()
+
+    # # Opens an interactive window. Fine-tune camera angles before generating movie
+    # # Controls: https://docs.pyvista.org/plotting/plotting.html
+
+    # print('Orient the view, then press "q" to close window and produce movie')
+    # camera = plotter.show(auto_close=False)
+    # print(camera)
+    # plotter.write_frame()
+
+    # frames = raw_dist.shape[0]
+    # for i in range(1, frames):
+    #     # Replace mesh values with new ones from next frame
+    #     mesh.point_arrays["values"] = gnfrm(i).flatten(order="F")
+    #     # Overwrite contours by regnerating with new data
+    #     contour.overwrite(mesh.contour(np.linspace(isomin, isomax, isosurf)))
+    #     plotter.subplot(0, 0)
+    #     plotter.update()
+    #     plotter.subplot(0, 1)
+    #     # Update time
+    #     timeText.ClearAllTexts()
+    #     timeText.SetText(
+    #         vtk.vtkCornerAnnotation.UpperLeft,
+    #         time_dist[i].strftime(r"%Y/%m/%d-%H:%M:%S.%f"),
+    #     )
+    #     plotter.update()
+    #     plotter.subplot(1, 0)
+    #     plotter.update()
+    #     plotter.subplot(1, 1)
+    #     plotter.update()
+    #     plotter.write_frame()
+
+    # # Check output against original (using plotly) method by
+    # # commenting out all above animation code and uncommenting
+    # # below
+    # # data = generate_frame(v_bins, e_bins, theta, phi, i=0).T
+    # # pA.plotVol(data, v_bins)
