@@ -10,6 +10,7 @@ import os
 from datetime import datetime as dt
 
 # 3rd Party
+import argh
 import numpy as np
 import pyspedas
 import pyvista
@@ -211,14 +212,44 @@ def get_e_bins(loc="centre"):
     return bins
 
 
+def inputs(start_time, end_time, date=None, probe=4):
+    if isinstance(start_time, str) and isinstance(end_time, str):
+        # Is correct type
+        if date is not None:
+            try:
+                start_time = f"{date}/{start_time}"
+                end_time = f"{date}/{end_time}"
+            except (TypeError, AttributeError) as e:
+                print("date needs to be a string.", e)
+            # Try parsing them as dates.
+            # If this works then they are the correct format
+        try:
+            dt.strptime(start_time, "%Y-%m-%d/%H:%M:%S")
+            dt.strptime(end_time, "%Y-%m-%d/%H:%M:%S")
+        except Exception as e:
+            print(
+                """date should be formatted as YYYY-MM-DD
+start_time and end_time should be formatted as:
+with date: YYYY-MM-DD/HH:MM:SS
+without date (Note: Must supply -d keyword): HH:MM:SS""",
+                e,
+            )
+    else:
+        raise TypeError("Both start_time and end_time need to be of type str.")
+
+    return [start_time, end_time], probe
+
+
 if __name__ == "__main__":
-    print("Loading data.")
-    # Load data
+    # Get CL args
+    argh.dispatch_command(inputs)
     trange = ["2015-10-07/11:44:34", "2015-10-07/11:44:49"]
     # probe = ["1", "2", "3", "4"]
     probe = "4"
     data_rate = "brst"
 
+    # Load data
+    print("Loading data.")
     mms_fpi = pyspedas.mms.fpi(
         trange=trange,
         probe=probe,
