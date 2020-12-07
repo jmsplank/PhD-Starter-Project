@@ -1,3 +1,11 @@
+## Table of Contents
+
+- [Install Requirements](#install-requirements)
+- [Running the code](#running-the-code)
+- [Generating animations](#generating-animations)
+  * [Customising the view](#customising-the-view)
+  * [Examples](#examples)
+
 ## Install Requirements
 
 Code written in Python 3.8.2. Assume using `pip` to install dependencies, if not you're on your own. All dependencies are listed in `requirements.txt`.
@@ -34,4 +42,36 @@ Most scripts are self contained. Use `python <PATH_TO_SCRIPT>` to run the script
 
 ## Generating animations
 
-Code for velocity distribution animations is in distribution_funciton/animate_velocity.py. Run it with `python distribution_function/animate_velocity.py`. There's no input args yet so changing things like the time range has to be done manually inside the script.
+Animations can be generated from the command line tool in `src/distribution_function/animate_velocity.py`. At minimum, a start time and end time must be supplied. Other options are output filename (`-o`), date (`-d`) and probe (`-p`).
+
+There are some pre-generated animations in `/animations`.
+
+![animation screenshot](animations/example_animation.png)
+
+### Customising the view
+
+Running the script will download the data if it hasn't been downloaded already, then open up an interactive window containing four views of the distribution. Each view can be manipulated independently by rotating, zooming and panning to get the desired view. Once you're happy, press `q` to begin rendering the animation. The interactive view will update to show each new frame as it generates.
+
+Advanced controls can be found at [pyvista controls](https://docs.pyvista.org/plotting/plotting.html)
+
+### Examples
+
+To look at the period from 08:14:04 to 08:16:30 on 26th Jan 2017, using the `date` keyword:
+
+`python animate_velocity.py 08:14:04 08:16:30 -d 2017-01-26`
+
+To look at the same period without using `date`, simply:
+
+`python animate_velocity.py 2017-01-26/8:14:04 2017-01-26/08:16:30`
+
+To specify a specific output filename:
+
+`python animate_velocity.py 2017-01-26/8:14:04 2017-01-26/08:16:30 -o animation.mp4`
+
+Note that if the filename supplied does not end in `.mp4` then that will automatically be appended. It is not currently possible to write to a different filetype. `vlc` can transcode if necessary.
+
+To change the probe from default (4):
+
+`python animate_velocity.py 2017-01-26/8:14:04 2017-01-26/08:16:30 -p 1`
+
+Will change to probe 1, options are `1,2,3,4`.
