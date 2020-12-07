@@ -38,6 +38,8 @@ Animations can be generated from the command line tool in `src/distribution_func
 
 There are some pre-generated animations in `/animations`.
 
+![animation screenshot](animations/example_animation.png)
+
 ### Examples
 
 To look at the period from 08:14:04 to 08:16:30 on 26th Jan 2017, using the `date` keyword:
