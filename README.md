@@ -1,3 +1,11 @@
+## Table of Contents
+
+- [Install Requirements](#install-requirements)
+- [Running the code](#running-the-code)
+- [Generating animations](#generating-animations)
+  * [Customising the view](#customising-the-view)
+  * [Examples](#examples)
+
 ## Install Requirements
 
 Code written in Python 3.8.2. Assume using `pip` to install dependencies, if not you're on your own. All dependencies are listed in `requirements.txt`.
@@ -39,6 +47,12 @@ Animations can be generated from the command line tool in `src/distribution_func
 There are some pre-generated animations in `/animations`.
 
 ![animation screenshot](animations/example_animation.png)
+
+### Customising the view
+
+Running the script will download the data if it hasn't been downloaded already, then open up an interactive window containing four views of the distribution. Each view can be manipulated independently by rotating, zooming and panning to get the desired view. Once you're happy, press `q` to begin rendering the animation. The interactive view will update to show each new frame as it generates.
+
+Advanced controls can be found at [pyvista controls](https://docs.pyvista.org/plotting/plotting.html)
 
 ### Examples
 
