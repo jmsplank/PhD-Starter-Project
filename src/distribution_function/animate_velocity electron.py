@@ -299,7 +299,7 @@ if __name__ == "__main__":
 
     # fname = "animate.mp4"
     # Min isosurface, max ..., and num of surfaces
-    isomin, isomax, isosurf = 0, 1, 10
+    isomin, isomax, isosurf = -1, 1, 10
     # Initalise plot with first frame
     meshData = gnfrm(0)
     # Generate pyvista object from np array
