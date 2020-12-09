@@ -130,18 +130,18 @@ meanv /= len(probe)
 
 ν_0 = meanv  # * np.sin(np.radians(47))
 print(ν_0)
-freq2 = 2 * np.pi * freq / ν_0
+k = 2 * np.pi * freq / ν_0
 
-plt.loglog(freq2[freq > 0], abs(Y)[freq > 0])
+plt.loglog(k[freq > 0], abs(Y)[freq > 0])
 plt.xlabel("f [Hz]")
 plt.ylabel("Magnetic spectrum [nT²Hz⁻¹]")
 
 plt.subplot(2, 1, 2)
 
-freq2 = freq2[freq > 0]
+k = k[freq > 0]
 data = abs(Y)[freq > 0]
-data2 = data * freq2 ** (2.7)
-plt.loglog(freq2, data2)
+data2 = data * k ** (2.7)
+plt.loglog(k, data2)
 plt.xlabel("k[km$^{-1}$]")
 plt.ylabel(r"Magnetic Spectrum $\times k^{2.7}$")
 
@@ -149,12 +149,12 @@ plt.ylabel(r"Magnetic Spectrum $\times k^{2.7}$")
 ρ_e = 1.0
 
 x = np.array([1.0 / ρ_i, 1.0 / ρ_e])
-# indX = [find_nearest(freq2, x[0]), find_nearest(freq2, x[1])]
-indX = np.searchsorted(freq2, x, side="left")
-print(indX)
+# indX = [find_nearest(k, x[0]), find_nearest(k, x[1])]
+indX = np.searchsorted(k, x, side="left")
+print("Index of ρ_i and ρ_e: ", indX)
 y = np.array([data[indX[0]], data[indX[1]]])
-print(x, y)
-print(np.diff(np.log(y)) / np.diff(np.log(x)))
+print(f"x coord: {x[0]}, {x[1]} | y coord: {y[0]}, {y[1]}")
+print(f"Power: {np.diff(np.log(y)) / np.diff(np.log(x))}")
 plt.loglog(x, y * x ** 2.7)
 
 
