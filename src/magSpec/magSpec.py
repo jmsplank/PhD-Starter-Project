@@ -33,6 +33,7 @@ def shift_with_nan(xs, n):
 print("Loading data.")
 # Load data
 trange = ["2016-12-09/09:03:00", "2016-12-09/09:10:00"]
+# trange = ["2016-12-09/09:03:00", "2016-12-09/09:04:00"]
 probe = ["1", "2", "3", "4"]
 # probe = "1"
 data_rate = "brst"
@@ -48,9 +49,11 @@ mms_fgm = pyspedas.mms.fgm(
     trange=trange, probe=probe, data_rate=data_rate, time_clip=True
 )
 
-# mms_scm = pyspedas.mms.scm(
-#     trange=trange, probe=probe, data_rate=data_rate, time_clip=True
-# )
+# mms_fsm = pyspedas.mms.fsm(trange=trange, probe=probe, time_clip=True, level="l3")
+
+# # mms_scm = pyspedas.mms.scm(
+# #     trange=trange, probe=probe, data_rate=data_rate, time_clip=True
+# # )
 
 # Get raw distribution data
 get_b_str = lambda probe_num: f"mms{probe_num}_fgm_b_gse_{data_rate}_l2"
@@ -59,7 +62,8 @@ b_data = {}
 for probe_num in range(1, 5):
     b_string = get_b_str(probe_num)
     pyspedas.tinterpol(b_string, get_b_str(1), newname=b_string)
-    data = data_quants[b_string].values[:, 3]
+    data = data_quants[b_string].values[:, :3]
+    data = data.sum(axis=1)
     finiteMask = np.isfinite(data)
     b_data[f"mms{probe_num}"] = np.interp(
         time_dist, time_dist[finiteMask], data[finiteMask]
@@ -74,7 +78,7 @@ Start:  {dt.strftime(time_dist[0], '%H:%M:%S.%f')}
 End:    {dt.strftime(time_dist[-1], '%H:%M:%S.%f')}"""
 )
 
-print("Averaging |B| from mms1-4")
+print("Summing B from mms1-4")
 temp = np.empty((b_data["mms1"].shape[0], 4))
 shifts = []
 for i in range(1, 5):
