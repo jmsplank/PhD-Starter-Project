@@ -55,6 +55,10 @@ mms_fgm = pyspedas.mms.fgm(
 # #     trange=trange, probe=probe, data_rate=data_rate, time_clip=True
 # # )
 
+mms_scm = pyspedas.mms.scm(
+    trange=trange, probe=probe, data_rate=data_rate, time_clip=True
+)
+
 # Get raw distribution data
 get_b_str = lambda probe_num: f"mms{probe_num}_fgm_b_gse_{data_rate}_l2"
 time_dist = data_quants[get_b_str(1)].coords["time"].values
@@ -162,4 +166,5 @@ print(f"Power: {np.diff(np.log(y)) / np.diff(np.log(x))}")
 plt.loglog(x, y * x ** 2.7)
 
 
+plt.savefig("magSpec.png")
 plt.show()
