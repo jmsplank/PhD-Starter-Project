@@ -18,8 +18,8 @@ mms_fpi = pyspedas.mms.fpi(
 
 raw_dist = data_quants["mms4_des_dist_brst"].values
 
-data = raw_dist[0].mean(axis=0)
+data = raw_dist[0].mean(axis=2)
 print(data.shape)
-X, Y = np.meshgrid(np.arange(0, 360, 11.25), np.arange(0, 180, 11.25))
+X, Y = np.meshgrid(np.arange(0, 180, 11.25), np.arange(0, 360, 11.25))
 plt.contourf(X, Y, data)
 plt.show()
