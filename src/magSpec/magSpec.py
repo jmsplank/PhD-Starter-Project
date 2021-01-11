@@ -30,249 +30,110 @@ def shift_with_nan(xs, n):
     return e
 
 
-def load_from_pyspedas(trange):
-    # Load mms data
-    print("Loading data.")
-    # Load data
-    # trange = ["2016-12-09/09:03:00", "2016-12-09/09:04:00"]
-    probe = ["1", "2", "3", "4"]
-    # probe = "1"
-    data_rate = "brst"
+def interp_correction(ref_str, modify_str, time):
+    if ref_str != modify_str:
+        pyspedas.tinterpol(modify_str, ref_str, newname=modify_str)
+    data = data_quants[modify_str].values[:, :3]
+    fm = np.ones(len(data[:, 0]), dtype=bool)
+    for i in range(3):
+        finiteMask = np.isfinite(data[:, i])
+        fm = np.logical_and(fm, finiteMask)
+    data2 = np.zeros((len(fm), 3))
+    for i in range(3):
+        data2[:, i] = np.interp(time, time[fm], data[fm, i])
+    return data2
 
-    mms_fpi = pyspedas.mms.fpi(
-        trange=trange,
-        probe=probe,
-        # datatype="dis-dist",
-        data_rate=data_rate,
-        time_clip=True,
-    )
 
-    mms_fgm = pyspedas.mms.fgm(
-        trange=trange, probe=probe, data_rate=data_rate, time_clip=True
-    )
-
-    # mms_fsm = pyspedas.mms.fsm(trange=trange, probe=probe, time_clip=True, level="l3")
-
-    # mms_scm = pyspedas.mms.scm(
-    #     trange=trange, probe=probe, data_rate=data_rate, time_clip=True
-    # )
-
-    # Get raw distribution data
-    get_b_str = lambda probe_num: f"mms{probe_num}_fgm_b_gse_{data_rate}_l2"
-    time_dist = data_quants[get_b_str(1)].coords["time"].values
-
-    # get_fsm_str = lambda probe_num: f"mms{probe_num}_scm_acb_gse_scb_brst_l2"
-
-    # Get time of each step
-    # fsm_time_dist = data_quants[get_fsm_str(1)].coords["time"].values
-    # Convert to datetime
-
-    b_data = {}
-    for probe_num in range(1, 5):
-        # Interpolating values onto MMS1 time steps
-        b_string = get_b_str(probe_num)
-        pyspedas.tinterpol(b_string, get_b_str(1), newname=b_string)
-        # Get data from tplot vars
-        data = data_quants[b_string].values[:, :3]
-        # Sum across MMS1-4
-        data = data.sum(axis=1)
-        # Get rid of NAN's
-        finiteMask = np.isfinite(data)
-        b_data[f"mms{probe_num}"] = np.interp(
-            time_dist, time_dist[finiteMask], data[finiteMask]
+def load_data(trange, probe, data_rate, load_fgm=True, load_scm=True):
+    if type(probe) == str:
+        probe = [probe]
+    if load_fgm:
+        fgm_str = lambda probe_num: f"mms{probe_num}_fgm_b_gse_brst_l2"
+        print("Loading FGM")
+        pyspedas.mms.fgm(
+            trange=trange, probe=probe, data_rate=data_rate, time_clip=True
         )
-
-    time_dist = np.array([dt.utcfromtimestamp(x) for x in time_dist])
-
-    print(
-        f"""Data loaded. {b_data['mms1'].shape[0]} time steps
-    Start:  {dt.strftime(time_dist[0], '%H:%M:%S.%f')}
-    End:    {dt.strftime(time_dist[-1], '%H:%M:%S.%f')}"""
-    )
-
-    print("Summing B from mms1-4")
-    temp = np.empty((b_data["mms1"].shape[0], 4))
-    shifts = []
-    for i in range(1, 5):
-        print(f"MMS{i}: Assigning data")
-        temp[:, i - 1] = b_data[f"mms{i}"]
-    #     if i > 1:
-    #         print(f"MMS{i}: Correlating with MMS1")
-    #         # See src/shock_normal/timing_analysis.py
-    #         corr = np.correlate(
-    #             temp[:, i - 1] - temp[:, i - 1].mean(),
-    #             temp[:, 0] - temp[:, 0].mean(),
-    #             mode="full",
-    #         )
-    #         shift = np.argmax(corr) - (len(temp[:, i - 1]) - 1)
-    #         shifts.append(shift)
-    #         # Shift SC data to same time point
-    #         print(f"MMS{i}: Shifting {shift} indices")
-    #         temp[:, i - 1] = shift_with_nan(temp[:, i - 1], shift)
-
-    avg_B = np.mean(temp, axis=1)
-    shifts = np.array(shifts)
-    # Generate slice to trim nan's created by aligning SC's
-    slice_B = slice(
-        max(shifts[shifts > 0]) if len(shifts[shifts > 0]) > 0 else None,
-        -1 + min(shifts[shifts < 0]) if len(shifts[shifts < 0]) > 0 else None,
-    )
-    avg_B = avg_B[slice_B]
-    time_dist = time_dist[slice_B]
-
-    # Saving results
-    print("Saving results")
-    np.save("src/magSpec/avg_B.npy", avg_B)
-    np.save("src/magSpec/time_dist", time_dist)
-
-    return (avg_B, time_dist)
-
-
-def load_scm_from_pyspedas(trange):
-    # Load mms data
-    print("Loading data.")
-    # Load data
-    # trange = ["2016-12-09/09:03:00", "2016-12-09/09:04:00"]
-    probe = ["1", "2", "3", "4"]
-    # probe = "1"
-    data_rate = "brst"
-
-    mms_fpi = pyspedas.mms.fpi(
-        trange=trange,
-        probe=probe,
-        # datatype="dis-dist",
-        data_rate=data_rate,
-        time_clip=True,
-    )
-
-    # mms_fgm = pyspedas.mms.fgm(
-    #     trange=trange, probe=probe, data_rate=data_rate, time_clip=True
-    # )
-
-    # mms_fsm = pyspedas.mms.fsm(trange=trange, probe=probe, time_clip=True, level="l3")
-
-    mms_scm = pyspedas.mms.scm(
-        trange=trange, probe=probe, data_rate=data_rate, time_clip=True
-    )
-
-    # Get raw distribution data
-    # get_b_str = lambda probe_num: f"mms{probe_num}_fgm_b_gse_{data_rate}_l2"
-    # time_dist = data_quants[get_b_str(1)].coords["time"].values
-
-    get_fsm_str = lambda probe_num: f"mms{probe_num}_scm_acb_gse_scb_brst_l2"
-
-    # Get time of each step
-    fsm_time_dist = data_quants[get_fsm_str(1)].coords["time"].values
-    # Convert to datetime
-
-    b_data = {}
-    for probe_num in range(1, 5):
-        # Interpolating values onto MMS1 time steps
-        b_string = get_fsm_str(probe_num)
-        pyspedas.tinterpol(b_string, get_fsm_str(1), newname=b_string)
-        # Get data from tplot vars
-        data = data_quants[b_string].values[:, :3]
-        # Sum across MMS1-4
-        data = data.sum(axis=1)
-        # Get rid of NAN's
-        finiteMask = np.isfinite(data)
-        b_data[f"mms{probe_num}"] = np.interp(
-            fsm_time_dist, fsm_time_dist[finiteMask], data[finiteMask]
+        fgm = {}
+        fgm["time"] = data_quants[fgm_str(probe[0])].coords["time"].values
+        fgm["time_dt"] = np.array([dt.utcfromtimestamp(x) for x in fgm["time"]])
+    if load_scm:
+        scm_str = lambda probe_num: f"mms{probe_num}_scm_acb_gse_scb_brst_l2"
+        print("Loading SCM")
+        pyspedas.mms.scm(
+            trange=trange, probe=probe, data_rate=data_rate, time_clip=True
         )
+        scm = {}
+        scm["time"] = data_quants[scm_str(probe[0])].coords["time"].values
+        scm["time_dt"] = np.array([dt.utcfromtimestamp(x) for x in scm["time"]])
 
-    fsm_time_dist = np.array([dt.utcfromtimestamp(x) for x in fsm_time_dist])
+    for probe_num in probe:
+        if load_fgm:
+            fgm[f"mms{probe_num}"] = interp_correction(
+                fgm_str(probe[0]), fgm_str(probe_num), fgm["time"]
+            )
+        if load_scm:
+            scm[f"mms{probe_num}"] = interp_correction(
+                scm_str(probe[0]), scm_str(probe_num), scm["time"]
+            )
 
-    print(
-        f"""Data loaded. {b_data['mms1'].shape[0]} time steps
-    Start:  {dt.strftime(fsm_time_dist[0], '%H:%M:%S.%f')}
-    End:    {dt.strftime(fsm_time_dist[-1], '%H:%M:%S.%f')}"""
+    return (fgm if load_fgm else None, scm if load_scm else None)
+
+
+def separate_components(mag_dict):
+    keys = [x for x in mag_dict.keys() if "mms" in x]
+    outNames = []
+    for key in keys:
+        for i in range(3):
+            name = f"{key}_{['x', 'y', 'z'][i]}"
+            mag_dict[name] = mag_dict[key][:, i]
+            outNames.append(name)
+    return outNames
+
+
+def do_FFT(data, xyzs, meanv):
+    data["freq"] = np.fft.fftfreq(
+        len(data[xyzs[0]]), (data["time"][1] - data["time"][0])
     )
-
-    print("Summing B from mms1-4")
-    temp = np.empty((b_data["mms1"].shape[0], 4))
-    shifts = []
-    for i in range(1, 5):
-        print(f"MMS{i}: Assigning data")
-        temp[:, i - 1] = b_data[f"mms{i}"]
-    #     if i > 1:
-    #         print(f"MMS{i}: Correlating with MMS1")
-    #         # See src/shock_normal/timing_analysis.py
-    #         corr = np.correlate(
-    #             temp[:, i - 1] - temp[:, i - 1].mean(),
-    #             temp[:, 0] - temp[:, 0].mean(),
-    #             mode="full",
-    #         )
-    #         shift = np.argmax(corr) - (len(temp[:, i - 1]) - 1)
-    #         shifts.append(shift)
-    #         # Shift SC data to same time point
-    #         print(f"MMS{i}: Shifting {shift} indices")
-    #         temp[:, i - 1] = shift_with_nan(temp[:, i - 1], shift)
-
-    avg_B = np.mean(temp, axis=1)
-    shifts = np.array(shifts)
-    # Generate slice to trim nan's created by aligning SC's
-    slice_B = slice(
-        max(shifts[shifts > 0]) if len(shifts[shifts > 0]) > 0 else None,
-        -1 + min(shifts[shifts < 0]) if len(shifts[shifts < 0]) > 0 else None,
-    )
-    fsm_avg_B = avg_B[slice_B]
-    fsm_time_dist = fsm_time_dist[slice_B]
-
-    # Saving results
-    print("Saving results")
-    np.save("src/magSpec/fsm_avg_B.npy", fsm_avg_B)
-    np.save("src/magSpec/fsm_time_dist", fsm_time_dist)
-
-    return (fsm_avg_B, fsm_time_dist)
+    for xyz in xyzs:
+        centered = data[xyz] - np.mean(data[xyz])
+        centered_hann = np.hanning(len(centered)) * centered
+        Y = np.fft.fft(centered_hann)
+        Y = abs(Y)[data["freq"] > 0]
+        data[f"{xyz}_FFT"] = Y
+    data["freq"] = data["freq"][data["freq"] > 0]
+    data["freq_taylor"] = 2 * np.pi * data["freq"] / meanv
 
 
-def gen_plot_data(avg_B, time_dist):
-    # plt.subplot(2, 1, 2)
-    plt.subplot(2, 1, 1)
-    res = avg_B - np.mean(avg_B)
-    YHann = np.hanning(len(res)) * res
-    Y = np.fft.fft(YHann)
-    freq = np.fft.fftfreq(len(res), (time_dist[1] - time_dist[0]).total_seconds())
+def sum_components(data, probe):
+    for p in probe:
+        keys = [x for x in data.keys() if f"mms{p}" in x and "FFT" in x]
+        data[f"mms{p}_FFT"] = np.sum(np.array([data[k] for k in keys]), axis=0)
+        print(f"mms{p}_FFT shape: {data[f'mms{p}_FFT'].shape}")
 
-    # Scale using Taylor Hypothesis
-    # Get average ion velocity
-    # meanv = 0
-    # for iprobe in probe:
-    #     bulkv = data_quants[f"mms{iprobe}_dis_bulkv_gse_brst"].values
-    #     bulkv = np.linalg.norm(bulkv, axis=1)
-    #     meanv += bulkv.mean()
-    # meanv /= len(probe)
-    # np.save("src/magSpec/meanv.npy", meanv)
-    meanv = np.load("src/magSpec/meanv.npy", allow_pickle=True)
 
-    ν_0 = meanv  # * np.sin(np.radians(47))
-    print(ν_0)
-    k = 2 * np.pi * freq / ν_0
+def mean_probes(data, probe):
+    data["FFT"] = np.mean(np.array([data[f"mms{p}_FFT"] for p in probe]), axis=0)
+    print(f"FFT shape: {data['FFT'].shape}")
 
-    plt.loglog(k[freq > 0], abs(Y)[freq > 0])
+
+def plot_FFT(data, slope=None, color="k"):
+    plt.subplot(2 if slope is not None else 1, 1, 1)
+    plt.loglog(data["freq_taylor"], data["FFT"], color=color)
     plt.xlabel("f [Hz]")
-    plt.ylabel("Magnetic spectrum [nT²Hz⁻¹]")
+    plt.ylabel("Magnetic spectrum $[nT^2Hz^{-1}]$")
 
-    plt.subplot(2, 1, 2)
+    gen_str = dt.strftime(dt.now(), "%H%M%S_%a%d%b")
+    plt.title(f"Plot generated {gen_str}")
 
-    k = k[freq > 0]
-    data = abs(Y)[freq > 0]
-    data2 = data * k ** (2.7)
-    plt.loglog(k, data2)
-    plt.xlabel("k[km$^{-1}$]")
-    plt.ylabel(r"Magnetic Spectrum $\times k^{2.7}$")
+    if slope is not None:
+        plt.subplot(2, 1, 2)
+        plt.loglog(
+            data["freq_taylor"], data["FFT"] * data["freq_taylor"] ** slope, color=color
+        )
+        plt.xlabel("k[km$^{-1}$]")
+        plt.ylabel(r"Magnetic Spectrum $\times k^{2.7}$")
 
-    ρ_i = 180.0
-    ρ_e = 1.0
-
-    x = np.array([1.0 / ρ_i, 1.0 / ρ_e])
-    # indX = [find_nearest(k, x[0]), find_nearest(k, x[1])]
-    indX = np.searchsorted(k, x, side="left")
-    print("Index of ρ_i and ρ_e: ", indX)
-    y = np.array([data[indX[0]], data[indX[1]]])
-    print(f"x coord: {x[0]}, {x[1]} | y coord: {y[0]}, {y[1]}")
-    print(f"Power: {np.diff(np.log(y)) / np.diff(np.log(x))}")
-    plt.loglog(x, y * x ** 2.7)
+    return gen_str
 
 
 if __name__ == "__main__":
@@ -281,28 +142,31 @@ if __name__ == "__main__":
     # probe = "1"
     data_rate = "brst"
 
-    if 1 == 1:
-        print("Trying to load saved arrays.")
-        try:
-            fsm_avg_B = np.load("src/magSpec/fsm_avg_B.npy", allow_pickle=True)
-            fsm_time_dist = np.load("src/magSpec/fsm_time_dist.npy", allow_pickle=True)
-            print("Loaded SCM arrays")
-        except FileNotFoundError as e:
-            print("SCM File(s) not found. Generating...")
-            fsm_avg_B, fsm_time_dist = load_scm_from_pyspedas(trange)
-        try:
-            avg_B = np.load("src/magSpex/avg_B.npy", allow_pickle=True)
-            time_dist = np.load("src/magSpex/time_dist.npy", allow_pickle=True)
-            print("Loaded FGM arrays")
-        except FileNotFoundError as e:
-            print("FGM File(s) not found. Generating...")
-            avg_B, time_dist = load_from_pyspedas(trange)
-    else:
-        avg_B, time_dist = load_from_pyspedas(trange)
-        fsm_avg_B, fsm_time_dist = load_scm_from_pyspedas(trange)
+    print("Loading data")
+    fgm, scm = load_data(trange, probe, data_rate)
 
-    gen_plot_data(avg_B, time_dist)
-    gen_plot_data(fsm_avg_B, fsm_time_dist)
+    # TODO: Correct for lag
 
-    plt.savefig(f"src/magSpec/magSpec_{dt.strftime(dt.now(), '%H%M%S_%a%m')}.png")
+    print("Separating components")
+    fgm_xyz = separate_components(fgm)
+    scm_xyz = separate_components(scm)
+
+    meanv = np.load("src/magSpec/meanv.npy", allow_pickle=True)
+
+    print("FFT")
+    do_FFT(fgm, fgm_xyz, meanv)
+    do_FFT(scm, scm_xyz, meanv)
+
+    print("Σ components")
+    sum_components(fgm, probe)
+    mean_probes(fgm, probe)
+
+    sum_components(scm, probe)
+    mean_probes(scm, probe)
+
+    print("Plotting")
+    _ = plot_FFT(fgm, slope=2.7)
+    sv = plot_FFT(scm, slope=2.7, color="g")
+
+    plt.savefig(f"src/magSpec/magSpec_{sv}.png")
     plt.show()
