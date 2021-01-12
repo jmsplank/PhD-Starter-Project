@@ -98,7 +98,7 @@ def do_FFT(data, xyzs, meanv):
         centered = data[xyz] - np.mean(data[xyz])
         centered_hann = np.hanning(len(centered)) * centered
         Y = np.fft.fft(centered_hann)
-        Y = abs(Y)[data["freq"] > 0]
+        Y = abs(Y)[data["freq"] > 0] ** 2
         data[f"{xyz}_FFT"] = Y
     data["freq"] = data["freq"][data["freq"] > 0]
     data["freq_taylor"] = 2 * np.pi * data["freq"] / meanv
@@ -137,7 +137,8 @@ def plot_FFT(data, slope=None, color="k"):
 
 
 if __name__ == "__main__":
-    trange = ["2016-12-09/09:03:00", "2016-12-09/09:10:00"]
+    # trange = ["2016-12-09/09:26:24", "2016-12-09/09:34:58"]  # Interval 2
+    trange = ["2016-12-09/09:01:36", "2016-12-09/09:07:00"]  # Interval 1
     probe = ["1", "2", "3", "4"]
     # probe = "1"
     data_rate = "brst"

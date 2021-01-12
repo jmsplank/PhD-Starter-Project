@@ -1,15 +1,13 @@
-import math
-from datetime import datetime as dt
 import time
+from datetime import datetime as dt
 
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 import pyspedas
 from pytplot import data_quants
-from scipy.optimize import curve_fit
 
-trange = ["2016-12-09/09:01:39", "2016-12-09/09:06:59"]
+trange = ["2016-12-09/09:01:36", "2016-12-09/09:07:00"]  # Interval 1
+# trange = ["2016-12-09/09:26:24", "2016-12-09/09:34:58"]  # Interval 2
 probe = "1"
 # probe = "1"
 data_rate = "brst"
@@ -34,7 +32,7 @@ for i in range(3):
     meanv = np.load("src/magSpec/meanv.npy", allow_pickle=True)
     k = 2 * np.pi * freq / meanv
     k = k[freq > 0]
-    Y[["x", "y", "z"][i]] = abs(Yi)[freq > 0]
+    Y[["x", "y", "z"][i]] = np.power(abs(Yi), 2)[freq > 0]
 
 y = np.sum([Y[i] for i in ["x", "y", "z"]], axis=0)
 
