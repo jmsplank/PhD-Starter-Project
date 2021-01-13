@@ -32,7 +32,7 @@ for i in range(3):
     meanv = np.load("src/magSpec/meanv.npy", allow_pickle=True)
     k = 2 * np.pi * freq / meanv
     k = k[freq > 0]
-    Y[["x", "y", "z"][i]] = np.power(abs(Yi), 2)[freq > 0]
+    Y[["x", "y", "z"][i]] = (np.power(abs(Yi), 2) * 10e9)[freq > 0]
 
 y = np.sum([Y[i] for i in ["x", "y", "z"]], axis=0)
 
