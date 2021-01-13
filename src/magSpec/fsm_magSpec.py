@@ -16,7 +16,7 @@ mms_fsm = pyspedas.mms.fsm(trange=trange, probe=probe, time_clip=True, level="l3
 
 fsm_B = data_quants["mms1_fsm_b_gse_brst_l3"].values
 time_dist = data_quants["mms1_fsm_b_gse_brst_l3"].coords["time"].values
-
+td = time_dist[1] - time_dist[0]
 
 # Correct for missing data
 Y = {}
@@ -32,7 +32,7 @@ for i in range(3):
     meanv = np.load("src/magSpec/meanv.npy", allow_pickle=True)
     k = 2 * np.pi * freq / meanv
     k = k[freq > 0]
-    Y[["x", "y", "z"][i]] = (np.power(abs(Yi), 2) * 10e9 / 125)[freq > 0]
+    Y[["x", "y", "z"][i]] = (np.power(abs(Yi), 2) * 10e9 / (1.0 / td))[freq > 0]
 
 y = np.sum([Y[i] for i in ["x", "y", "z"]], axis=0)
 
