@@ -21,7 +21,7 @@ time_dist = data_quants["mms1_fsm_b_gse_brst_l3"].coords["time"].values
 # Correct for missing data
 Y = {}
 for i in range(3):
-    B = fsm_B[:, i]
+    B = fsm_B[:, i] * 10e9
     finiteMask = np.isfinite(B)
     print((1 - finiteMask).sum())
     B = np.interp(time_dist, time_dist[finiteMask], B[finiteMask])
