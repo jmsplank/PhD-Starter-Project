@@ -7,6 +7,7 @@ import pyspedas
 from pytplot import data_quants
 from scipy.stats import pearsonr
 import re
+from phdhelper.math.signal_processing import autocorrelate
 
 from magSpec import interp_correction
 
@@ -30,15 +31,15 @@ def autocorr(x):
 
 fgm_B = interp_correction(fgm_str(probe[0]), fgm_str(probe[0]), time_dist)
 # fgm_B = data_quants[fgm_str(probe[0])].values
-corr = np.empty((fgm_B.shape[0], 4))
+corr = np.empty((5000 // 2, 4))
 for i in range(4):
     if i != 1:
         fgm_B = interp_correction(fgm_str(probe[0]), fgm_str(probe[i]), time_dist)
         # fgm_B = data_quants[fgm_str(probe[i])].values[:, :3]
     mag = (np.linalg.norm((fgm_B - fgm_B.mean(axis=0)), axis=1) ** 2).mean()
-    corr[:, i] = np.array(
-        [autocorr(fgm_B[:, x] - fgm_B[:, x].mean()) / mag for x in range(3)]
-    ).mean(axis=0)
+    corr[:, i] = np.array([autocorrelate(fgm_B[:, x], 5000) for x in range(3)]).mean(
+        axis=0
+    )
 corr = corr.mean(axis=1)
 np.save(
     "src/magSpec/autocorrelation_{}.npy".format(re.sub(r"[^\w]", "", trange[0])), corr
@@ -55,6 +56,6 @@ plt.hlines(0, 0, 80, "k")
 plt.xlim((0, 80))
 
 plt.savefig(
-    f'src/magSpec/correlationLength_{dt.strftime(dt.now(), "%H%M%S_%a%d%b")}.png'
+    f'src/magSpec/img/correlationLength_{dt.strftime(dt.now(), "%H%M%S_%a%d%b")}.png'
 )
 plt.show()
