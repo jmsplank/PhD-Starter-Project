@@ -35,7 +35,10 @@ for i in range(4):
     if i != 1:
         fgm_B = interp_correction(fgm_str(probe[0]), fgm_str(probe[i]), time_dist)
         # fgm_B = data_quants[fgm_str(probe[i])].values[:, :3]
-    mag = (np.linalg.norm((fgm_B - fgm_B.mean(axis=0)), axis=1) ** 2).mean()
+    print(fgm_B.shape)
+    print((fgm_B - fgm_B.mean(axis=0)).shape)
+    print(np.linalg.norm(fgm_B - fgm_B.mean(axis=0), axis=1).shape)
+    mag = (np.linalg.norm(fgm_B - fgm_B.mean(axis=0), axis=1) ** 2).mean()
     corr[:, i] = np.array(
         [autocorr(fgm_B[:, x] - fgm_B[:, x].mean()) / mag for x in range(3)]
     ).mean(axis=0)

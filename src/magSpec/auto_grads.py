@@ -4,7 +4,8 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pyspedas
-from phdhelper.math import transforms
+
+# from phdhelper.math import transforms
 from pytplot import data_quants, tplot
 from scipy.optimize import curve_fit
 
@@ -34,12 +35,23 @@ def lengths(s="i"):
     p /= 1e3
     print(f"Inertial length: {p:.3f}km")
 
-    v = data_quants[f"mms1_d{s}s_bulkv_gse_brst"].values
+    T = data_quants["mms1_dis_tempperp_brst"].values
+    v = (
+        np.sqrt(
+            np.mean(T)
+            * 2
+            * 1.60217662e-19
+            / (1.6726219e-27 if s == "i" else 9.10938356e-31)
+        )
+        / 1e3
+    )
+    # print(v)
+    # v = data_quants[f"mms1_d{s}s_bulkv_gse_brst"].values
     B = data_quants["mms1_fgm_b_gse_brst_l2"].values * 1e-9
     BT = B[:, 3].mean()
     BB = B[:, :3].mean(axis=0)
     Bnorm = BB / np.linalg.norm(BB)
-    v2 = np.mean(np.linalg.norm(v, axis=1)) ** 2 - np.mean(np.dot(v, Bnorm)) ** 2
+    # v2 = np.mean(np.linalg.norm(v, axis=1)) ** 2 - np.mean(np.dot(v, Bnorm)) ** 2
     # print(f"B: {BT*1e9:.3f}nT")
     # B = B[:, :3].mean(axis=0)
     # v = transforms.rot_to_b(B, v)
@@ -47,7 +59,7 @@ def lengths(s="i"):
     # v = np.linalg.norm(v[:2, :], axis=1)
     # print(v.shape)
     # v = np.linalg.norm(v)
-    v = np.sqrt(v2)
+    # v = np.sqrt(v2)
     print(f"V: {v:.3f}kms⁻¹")
     omega_c = 1.60217662e-19 * BT / (1.6726219e-27 if s == "i" else 9.10938356e-31)
     rho = v / omega_c
