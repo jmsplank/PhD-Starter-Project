@@ -11,16 +11,7 @@ from scipy.optimize import curve_fit
 
 import fsm_magSpec
 
-trange = ["2016-12-09/09:01:36", "2016-12-09/09:07:00"]  # Interval 1
-# trange = ["2016-12-09/09:26:24", "2016-12-09/09:34:58"]  # Interval 2
-probe = "1"
-# probe = "1"
-data_rate = "brst"
 
-pyspedas.mms.fpi(trange, probe, data_rate)
-pyspedas.mms.fgm(trange, probe, data_rate)
-
-# tplot(["mms1_fgm_b_gse_brst_l2", "mms1_dis_tempperp_brst"])
 def lengths(s="i"):
     if s == "i":
         print("---->----IONS----<----")
@@ -71,15 +62,6 @@ def lengths(s="i"):
     return limit
 
 
-k, y = fsm_magSpec.load_data(trange, probe)
-i_limit = np.argmin(abs((1.0 / lengths("i")) - k))
-e_limit = np.argmin(abs((1.0 / lengths("e")) - k))
-instrum_limit = np.argmin(abs(k - 10))
-
-log_k = np.log10(k)
-log_y = np.log10(y)
-
-
 def line(x, m, c):
     return c + m * x
 
@@ -89,17 +71,6 @@ def grad(lower=None, upper=None):
     grad, pcov = curve_fit(line, log_k[sl], log_y[sl])
     err_grad = np.sqrt(np.diag(pcov))
     return grad, err_grad, sl
-
-
-g0 = grad(None, i_limit)
-g1 = grad(i_limit, e_limit)
-g2 = grad(e_limit, instrum_limit)
-
-# print(g0, g1, g2, sep="\n")
-
-ax1, ax2 = fsm_magSpec.plot(
-    k, y, vlines=np.array([1.0 / lengths("i"), 1.0 / lengths("e"), 10]).flatten()
-)
 
 
 def plotci(var, color):
@@ -140,19 +111,48 @@ def plotci(var, color):
     ax2.fill_between(x, neg, pos, color=color, alpha=0.2)
 
 
-plotci(g0, "orange")
-plotci(g1, "red")
-plotci(g2, "skyblue")
+if __name__ == "__main__":
+    trange = ["2016-12-09/09:01:36", "2016-12-09/09:07:00"]  # Interval 1
+    # trange = ["2016-12-09/09:26:24", "2016-12-09/09:34:58"]  # Interval 2
+    probe = "1"
+    # probe = "1"
+    data_rate = "brst"
 
-for l, g in zip(["orange", "red", "blue"], [g0, g1, g2]):
-    print(f"Gradient of {l} line: {g[0][0]:.2f}±{g[1][0]:.2E}")
+    pyspedas.mms.fpi(trange, probe, data_rate)
+    pyspedas.mms.fgm(trange, probe, data_rate)
 
+    k, y = fsm_magSpec.load_data(trange, probe)
+    i_limit = np.argmin(abs((1.0 / lengths("i")) - k))
+    e_limit = np.argmin(abs((1.0 / lengths("e")) - k))
+    instrum_limit = np.argmin(abs(k - 10))
 
-dstring = dt.strftime(dt.now(), "%H%M%S_%a%d%b")
-ax1.set_title(f"Plot generated: {dstring}")
-fname = f"src/magSpec/img/autoSlopes_{dstring}.png"
-plt.savefig(fname)
-os.system(f"xdg-open {fname}")
-keep = input("Keep image? (y/n): ")
-if keep[0].lower() != "y":
-    os.system(f"mv {fname} {os.path.split(fname)[0]+'/old/'+os.path.split(fname)[1]}")
+    log_k = np.log10(k)
+    log_y = np.log10(y)
+
+    g0 = grad(None, i_limit)
+    g1 = grad(i_limit, e_limit)
+    g2 = grad(e_limit, instrum_limit)
+
+    # print(g0, g1, g2, sep="\n")
+
+    ax1, ax2 = fsm_magSpec.plot(
+        k, y, vlines=np.array([1.0 / lengths("i"), 1.0 / lengths("e"), 10]).flatten()
+    )
+
+    plotci(g0, "orange")
+    plotci(g1, "red")
+    plotci(g2, "skyblue")
+
+    for l, g in zip(["orange", "red", "blue"], [g0, g1, g2]):
+        print(f"Gradient of {l} line: {g[0][0]:.2f}±{g[1][0]:.2E}")
+
+    dstring = dt.strftime(dt.now(), "%H%M%S_%a%d%b")
+    ax1.set_title(f"Plot generated: {dstring}")
+    fname = f"src/magSpec/img/autoSlopes_{dstring}.png"
+    plt.savefig(fname)
+    os.system(f"xdg-open {fname}")
+    keep = input("Keep image? (y/n): ")
+    if keep[0].lower() != "y":
+        os.system(
+            f"mv {fname} {os.path.split(fname)[0]+'/old/'+os.path.split(fname)[1]}"
+        )
