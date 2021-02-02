@@ -57,7 +57,7 @@ tplot(
     [
         "mms1_fgm_b_gse_brst_l2",
         "jtotal",
-        "mms1_des_bulkv_gse_brst",
+        "mms1_dis_bulkv_gse_brst",
         "mms1_des_numberdensity_brst",
         "mms1_des_tempparaperp_brst",
         "mms1_dis_tempparaperp_brst",
