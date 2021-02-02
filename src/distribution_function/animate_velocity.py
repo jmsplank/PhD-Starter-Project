@@ -1,10 +1,19 @@
 """Main script. Animates velocity distribution in GSE
 coordinates, as observed by MMS in spherical energy coords.
 
-Looking at a different time period should be as easy as 
-changing the trange parameter in the main script. (untested)
+Run as python animate_velocity.py -h to see the help on running the script.
 """
+print(
+    r"""    __  _____  ________    ___          _                 __  _           
+   /  |/  /  |/  / ___/   /   |  ____  (_)___ ___  ____ _/ /_(_)___  ____ 
+  / /|_/ / /|_/ /\__ \   / /| | / __ \/ / __ `__ \/ __ `/ __/ / __ \/ __ \
+ / /  / / /  / /___/ /  / ___ |/ / / / / / / / / / /_/ / /_/ / /_/ / / / /
+/_/  /_/_/  /_//____/  /_/  |_/_/ /_/_/_/ /_/ /_/\__,_/\__/_/\____/_/ /_/ 
+"""
+)
+print("Loading Imports")
 # Default imports
+import argparse as ap
 import glob
 import os
 from datetime import datetime as dt
@@ -76,13 +85,15 @@ def convert_space(dist, e_bins, theta, phi, rotate=None):
     return points, values
 
 
-def generate_frame(bins, e_bins, theta, phi, i=0, frange=None):
+def generate_frame(raw_dist, new_bins, e_bins, theta, phi, i=0, frange=None):
     """Ties together all steps to convert SC data into vel dist in XYZ.
 
     IN:
-        bins:   np.array(n)
+        raw_dist:   np.array(time, e_bins, theta, phi)
+                    - The raw, unprocessed data from SC
+        new_bins:   np.array(n)
                     - New velocity bins across one axis
-                    - Generates square grid from bins[0] -> bins[-1]
+                    - Generates cubic grid from bins[0] -> bins[-1]
                     - Total number of bins in output: n**3
         e_bins: np.array(32)
                     - Energy bins
@@ -115,7 +126,7 @@ def generate_frame(bins, e_bins, theta, phi, i=0, frange=None):
         else:
             dist = np.mean(raw_dist[i - 1 : i + 2, :, :, :], axis=0)
 
-    vx, vy, vz = np.meshgrid(bins, bins, bins)
+    vx, vy, vz = np.meshgrid(new_bins, new_bins, new_bins)
     # coordinates of each point on output
     uvw = np.array([vx.flatten(), vy.flatten(), vz.flatten()]).T
 
@@ -125,7 +136,7 @@ def generate_frame(bins, e_bins, theta, phi, i=0, frange=None):
     cwd = os.getcwd()
     # Check if running from inside distribution_function or project dir
     if cwd.split("/")[-1] != "distribution_function":
-        cwd += "/distribution_function"
+        cwd += "/src/distribution_function"
     # Check if vertices and weights have already been generated
     if cwd + "/vtx.npy" and cwd + "/wts.npy" in glob.glob(cwd + "/*.npy"):
         print(f"IT{i:02d}: Saved vtx and wts found. Loading...")
@@ -142,21 +153,20 @@ def generate_frame(bins, e_bins, theta, phi, i=0, frange=None):
     grid = interpol.interpolate(values, vtx, wts, fill_value=0.0).reshape(vx.shape)
 
     print(f"IT{i:02d}: Applying Gaussian smoothing filter...")
-    # Scale data in range [0,1). get max dynamic range by accounting
     # for mean and std
     grid = gaussian_filter(grid, sigma=1.2, mode="constant")
 
+    # Scale data in range [0,1). get max dynamic range by accounting
     print(f"IT{i:02d}: Rescaling Grid...")
     grid = grid.flatten()
     grid = scale(grid, axis=0, with_mean=True, with_std=True)
     grid = np.reshape(grid, vx.shape)
-
     print(f"IT{i:02d}: Done.")
     return grid
 
 
 def get_e_bins(loc="centre"):
-    """Get an array of energy bins.
+    """Get an array of MMS energy bins.
 
     IN:
         loc:    str
@@ -211,14 +221,85 @@ def get_e_bins(loc="centre"):
     return bins
 
 
+def inputs():
+    # start_time, end_time, date=None, probe=4
+    parser = ap.ArgumentParser()
+    parser.add_argument(
+        "start_time",
+        type=str,
+        help="The start time. Can be formatted as YYYY-MM-DD/HH:MM:SS or HH:MM:SS with -d keyword",
+    )
+    parser.add_argument(
+        "end_time",
+        type=str,
+        help="The end time. Can be formatted as YYYY-MM-DD/HH:MM:SS or HH:MM:SS with -d keyword",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        default="",
+        help="The output file to save the animation in. use .mp4 format. default is ./vid_YYYYMMDDHHMMSS_LENGTHs.mp4",
+        type=str,
+    )
+    parser.add_argument(
+        "-d",
+        "--date",
+        type=str,
+        help="(optional) date if start_time/end_time contains only times, formatted as YYYY-MM-DD",
+        default=None,
+    )
+    parser.add_argument(
+        "-p",
+        "--probe",
+        type=int,
+        help="(optional) MMS probe to use [1-4]",
+        default=4,
+        choices=[1, 2, 3, 4],
+    )
+    args = parser.parse_args()
+    if isinstance(args.start_time, str) and isinstance(args.end_time, str):
+        # Is correct type
+        if args.date is not None:
+            try:
+                args.start_time = f"{args.date}/{args.start_time}"
+                args.end_time = f"{args.date}/{args.end_time}"
+            except (TypeError, AttributeError) as e:
+                print("date needs to be a string.", e)
+            # Try parsing them as dates.
+            # If this works then they are the correct format
+        try:
+            st = dt.strptime(args.start_time, "%Y-%m-%d/%H:%M:%S")
+            et = dt.strptime(args.end_time, "%Y-%m-%d/%H:%M:%S")
+        except Exception as e:
+            print(
+                """date should be formatted as YYYY-MM-DD
+start_time and end_time should be formatted as:
+with date: YYYY-MM-DD/HH:MM:SS
+without date (Note: Must supply -d keyword): HH:MM:SS""",
+                e,
+            )
+    else:
+        raise TypeError("Both start_time and end_time need to be of type str.")
+
+    if args.output == "":
+        args.output = f"vid_{dt.strftime(st, '%Y%m%d%H%M%S')}_{str(int((et-st).total_seconds()))}s.mp4"
+    if ".mp4" not in args.output:
+        args.output += ".mp4"
+
+    return [args.start_time, args.end_time], args.probe, args.output
+
+
 if __name__ == "__main__":
-    print("Loading data.")
-    # Load data
-    trange = ["2015-10-07/11:44:34", "2015-10-07/11:44:49"]
+    # Get CL args
+    print("Processing input args")
+    trange, probe, fname = inputs()
+    # trange = ["2015-10-07/11:44:34", "2015-10-07/11:44:49"]
     # probe = ["1", "2", "3", "4"]
-    probe = "4"
+    # probe = "4"
     data_rate = "brst"
 
+    # Load data
+    print("Loading data.")
     mms_fpi = pyspedas.mms.fpi(
         trange=trange,
         probe=probe,
@@ -261,10 +342,11 @@ if __name__ == "__main__":
         Abbrev. of generate_frame. Reformats into shape expected
         by pyvista's routines.
         """
-        return np.swapaxes(generate_frame(v_bins, e_bins, theta, phi, i=i).T, 0, 1)
+        return np.swapaxes(
+            generate_frame(raw_dist, v_bins, e_bins, theta, phi, i=i).T, 0, 1
+        )
 
-    # Output file name
-    fname = "animate.mp4"
+    # fname = "animate.mp4"
     # Min isosurface, max ..., and num of surfaces
     isomin, isomax, isosurf = 0, 1, 10
     # Initalise plot with first frame
@@ -347,7 +429,8 @@ if __name__ == "__main__":
     frames = raw_dist.shape[0]
     for i in range(1, frames):
         # Replace mesh values with new ones from next frame
-        mesh.point_arrays["values"] = gnfrm(i).flatten(order="F")
+        newVals = gnfrm(i).flatten(order="F")
+        mesh.point_arrays["values"] = newVals
         # Overwrite contours by regnerating with new data
         contour.overwrite(mesh.contour(np.linspace(isomin, isomax, isosurf)))
         plotter.subplot(0, 0)
@@ -369,5 +452,5 @@ if __name__ == "__main__":
     # Check output against original (using plotly) method by
     # commenting out all above animation code and uncommenting
     # below
-    # data = generate_frame(v_bins, e_bins, theta, phi, i=0).T
+    # data = generate_frame(raw_dist, v_bins, e_bins, theta, phi, i=0).T
     # pA.plotVol(data, v_bins)

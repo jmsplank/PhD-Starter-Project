@@ -1,4 +1,4 @@
 env/*
 mms_data/*
-.vscode/*
 .DS_Store
+.vscode/settings.json
