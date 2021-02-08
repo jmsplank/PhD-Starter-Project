@@ -9,10 +9,8 @@ import numpy as np
 import pyspedas
 from pytplot import data_quants
 from scipy.optimize import curve_fit
-from scipy.ndimage.filters import uniform_filter1d
 
-import fsm_magSpec
-from auto_grads import lengths, grad
+from auto_grads import lengths
 
 trange = ["2016-12-09/09:01:36", "2016-12-09/09:07:00"]  # Interval 1
 # trange = ["2016-12-09/09:26:24", "2016-12-09/09:34:58"]  # Interval 2
