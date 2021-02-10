@@ -41,10 +41,11 @@ for i in range(4):
     )
 corr = corr.mean(axis=1)
 np.save(
-    "src/magSpec/autocorrelation_{}.npy".format(re.sub(r"[^\w]", "", trange[0])), corr
+    "src/magSpec/npy/autocorrelation_{}.npy".format(re.sub(r"[^\w]", "", trange[0])),
+    corr,
 )
 
-meanv = np.load("src/magSpec/meanv.npy")
+meanv = np.load("src/magSpec/npy/meanv.npy")
 # print(meanv)
 # print(timeDelta)
 print(corr)
