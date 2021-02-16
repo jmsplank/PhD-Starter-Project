@@ -146,10 +146,12 @@ if __name__ == "__main__":
     meanv = np.linalg.norm(meanv)
     print(f"mean velocity v₀: {meanv}km/s")
 
-    x, out = load_moving(trange, probe, meanv, width=int(1e5), windows=int(500))
+    x, out = load_moving(trange, probe, meanv, width=int(1e3), windows=int(5000))
     x2 = [dt.utcfromtimestamp(X) for X in x]
     dx = x[1] - x[0]
     print(f"{len(x)} windows with a separation of {dx}s")
+
+    np.save("src/magSpec/npy/index_function.npy", {"x": x, "out": out})
 
     whatToPlot = "kurtosis"
     if whatToPlot == "data":
