@@ -20,16 +20,29 @@ def load_interval(trange, probe):
     return timeDelta, data
 
 
+def exp(x, A, B):
+    return B * np.exp(A * x)
+
+
 def line(x, m, c):
     return c + m * x
 
 
-def fit(y, x, stop):
-    y = np.log(y)
-    fit, err = curve_fit(line, x[:stop], y[:stop])
+def fit(y, x, stop, eqn):
+    if eqn.__name__ == "exp":
+        fit, err = curve_fit(eqn, x[:stop], y[:stop], p0=(-1.0 / 13, 1))
+    else:
+        y = np.log(y)
+        fit, err = curve_fit(eqn, x[:stop], y[:stop])
+
     l_c = -1.0 / fit[0]
-    val = line(x[:stop], *fit)
-    return l_c, np.exp(val)
+
+    if eqn.__name__ == "exp":
+        val = eqn(x[:stop], *fit)
+        return l_c, val
+    else:
+        val = eqn(x[:stop], *fit)
+        return l_c, np.exp(val)
 
 
 def corr_xyz(data, meanv, d_i, td):
@@ -68,7 +81,7 @@ if __name__ == "__main__":
     d_i = 50
     x, y = corr_xyz(data, meanv, d_i, td)
     stop = get_stop(y)
-    lfit = fit(y, x, stop)
+    lfit = fit(y, x, stop, exp)
     summary["I1F"] = lfit[0]
     summary["I1I"] = np.trapz(y[:stop], x[:stop])
 
@@ -94,7 +107,7 @@ if __name__ == "__main__":
     d_i = 50
     x, y = corr_xyz(data, meanv, d_i, td)
     stop = get_stop(y)
-    lfit = fit(y, x, stop)
+    lfit = fit(y, x, stop, exp)
     summary["I2F"] = lfit[0]
     summary["I2I"] = np.trapz(y[:stop], x[:stop])
 
@@ -125,3 +138,4 @@ if __name__ == "__main__":
     # plt.show()
     tstr = dt.strftime(dt.now(), "%H%M%S_%a%d%b")
     plt.savefig(f"src/magSpec/img/correlationLength_{tstr}.png")
+    # plt.show()

@@ -146,36 +146,36 @@ if __name__ == "__main__":
     meanv = np.linalg.norm(meanv)
     print(f"mean velocity v₀: {meanv}km/s")
 
-    x, out = load_moving(trange, probe, meanv, width=int(1e5), windows=int(500))
+    x, out = load_moving(trange, probe, meanv, width=int(1e5), windows=int(100))
     x2 = [dt.utcfromtimestamp(X) for X in x]
     dx = x[1] - x[0]
     print(f"{len(x)} windows with a separation of {dx}s")
 
-    whatToPlot = "kurtosis"
-    if whatToPlot == "data":
-        plt.plot(x, out)
-        plt.show()
-    elif whatToPlot == "kurtosis":
-        from scipy.stats import kurtosis
+    hann = np.hanning(len(x))
+    ftt = np.fft.fftfreq(len(x), dx)
 
-        k_out = kurtosis(out, axis=0, fisher=False)
-        print(k_out)
+    def abs2(x):
+        # https://stackoverflow.com/a/49545394
+        return x.real ** 2 + x.imag ** 2
 
-        mean = np.mean(out, axis=0)
-        std = np.std(out, axis=0)
+    for i in range(3):
+        dta = out[:, i] - out[:, i].mean()
+        ft = np.fft.rfft(hann * dta, norm="ortho")
+        sc = np.fft.irfft(abs2(ft), norm="ortho")
+        plt.subplot(3, 1, i + 1)
+        plt.plot(
+            ftt[ftt >= 0],
+            sc[ftt >= 0],
+            label=["->ion", "ion->electron", "electron->instrument"][i],
+        )
+        plt.legend()
 
-        k_plot = out - mean
-        k_plot /= std
-
-        for i in range(3):
-            plt.subplot(3, 1, i + 1)
-            plt.xlim(-5, 5)
-            plt.hist(
-                k_plot[:, i],
-                color=["r", "g", "b"][i],
-                bins=15,
-                label=f"$\mu={mean[i]:02.2f} \\ \sigma={std[i]:02.2f} \\ \mu_4={k_out[i]:02.2f}$",
-                alpha=0.6,
-            )
-            plt.legend()
-        plt.show()
+    # for i in range(3):
+    #     plt.plot(
+    #         x,
+    #         out[:, i],
+    #         label=["->ion", "ion->electron", "electron->instrument"][i],
+    #         color=["r", "g", "b"][i],
+    #     )
+    # plt.legend()
+    plt.show()
