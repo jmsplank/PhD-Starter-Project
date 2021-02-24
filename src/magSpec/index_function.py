@@ -1,6 +1,3 @@
-import asyncio
-import os
-
 from datetime import datetime as dt
 from math import floor
 
@@ -35,9 +32,8 @@ def load_moving(trange, probe, meanv, width=-1, windows=10):
 
     tot_len = len(fsm_B)
 
-    # Find number of bins to get specified freq
     if width == -1:
-        N = int(fsm_B.shape[0] * (1.0 / windows))
+        N = tot_len // windows
     else:
         N = width
 
@@ -45,44 +41,48 @@ def load_moving(trange, probe, meanv, width=-1, windows=10):
 
     T = np.fft.fftfreq(N, td)
     t = T[T > 0]
-    t = 2 * np.pi * t / meanv
+    k = 2 * np.pi * t / meanv
+    print(f"min k: {min(k)} max k: {max(k)}")
 
-    ilim = np.argmin(abs((1.0 / lengths("i")) - t))
-    elim = np.argmin(abs((1.0 / lengths("e")) - t))
-    ins_lim = np.argmin(abs(t - 10))
+    ilim = np.argmin(abs(1.0 / lengths("i") - k))
+    elim = np.argmin(abs(1.0 / lengths("e") - k))
+    ins_lim = np.argmin(abs(10 - k))
+    print(ilim, elim, ins_lim)
 
     out = np.empty((windows, 3), dtype=np.float64)
-
-    def fft(i, fsm_B, N, Hann):
-        # B = fsm_B[:, :] * 1e-9
-        B = fsm_B[i : N + i, :] * 1e-9
-        FT = {}
-        for j in range(3):
-            BB = B[:, j] - B[:, j].mean()
-            ft = np.fft.fft(Hann * BB)
-            ft = np.power(abs(ft), 2)
-            ft *= 1e9 / (1.0 / td)
-            FT[["x", "y", "z"][j]] = ft[T > 0]
-        y = np.sum([FT[k] for k in ["x", "y", "z"]], axis=0)
-        return y
-
-    def split_and_fit(k, y, ilim, elim, ins_lim):
-        g0 = grad(line, k, y, None, ilim)
-        g1 = grad(line, k, y, ilim, elim)
-        g2 = grad(line, k, y, elim, ins_lim)
-        return g0, g1, g2
 
     for a, i in tqdm(
         zip(range(windows), np.linspace(0, tot_len - N, windows, dtype=int))
     ):
         # print(f"{a+1}/{windows} => {i}:{i+N}/{tot_len}")
-        ft = fft(i, fsm_B, N, Hann)
+        ft = fft(i, fsm_B, N, Hann, T, td)
         # print(f"FFT done: length({len(ft)})")
-        out[a, :] = split_and_fit(t, ft, ilim, elim, ins_lim)
+        out[a, :] = split_and_fit(k, ft, ilim, elim, ins_lim)
 
     t_cent = time_dist[np.linspace(0, tot_len - N, windows, dtype=int) + N // 2]
 
     return t_cent, out
+
+
+def fft(i, fsm_B, N, Hann, T, td):
+    # B = fsm_B[:, :] * 1e-9
+    B = fsm_B[i : N + i, :] * 1e-9
+    FT = {}
+    for j in range(3):
+        BB = B[:, j] - B[:, j].mean()
+        ft = np.fft.fft(Hann * BB)
+        ft = np.power(abs(ft), 2)
+        ft *= 1e9 / (1.0 / td)
+        FT[["x", "y", "z"][j]] = ft[T > 0]
+    y = np.sum([FT[k] for k in ["x", "y", "z"]], axis=0)
+    return y
+
+
+def split_and_fit(k, y, ilim, elim, ins_lim):
+    g0 = grad(line, k, y, None, ilim)
+    g1 = grad(line, k, y, ilim, elim)
+    g2 = grad(line, k, y, elim, ins_lim)
+    return g0, g1, g2
 
 
 def line(x, m, c):
@@ -146,16 +146,18 @@ if __name__ == "__main__":
     meanv = np.linalg.norm(meanv)
     print(f"mean velocity v₀: {meanv}km/s")
 
-    x, out = load_moving(trange, probe, meanv, width=int(1e3), windows=int(5000))
+    x, out = load_moving(trange, probe, meanv, width=-1, windows=int(35))
     x2 = [dt.utcfromtimestamp(X) for X in x]
     dx = x[1] - x[0]
     print(f"{len(x)} windows with a separation of {dx}s")
 
     np.save("src/magSpec/npy/index_function.npy", {"x": x, "out": out})
 
-    whatToPlot = "kurtosis"
+    whatToPlot = "data"
     if whatToPlot == "data":
         plt.plot(x, out)
+        for i in range(3):
+            plt.plot(x, out[:, i], color=["r", "g", "b"][i])
         plt.show()
     elif whatToPlot == "kurtosis":
         from scipy.stats import kurtosis
