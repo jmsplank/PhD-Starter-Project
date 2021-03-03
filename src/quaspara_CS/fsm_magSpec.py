@@ -57,8 +57,7 @@ def plot(k, y, vlines=None, slope=2.7):
 
 
 if __name__ == "__main__":
-    trange = ["2016-12-09/09:01:36", "2016-12-09/09:07:00"]  # Interval 1
-    # trange = ["2016-12-09/09:26:24", "2016-12-09/09:34:58"]  # Interval 2
+    trange = ["2020-03-18/02:25:30", "2020-03-18/02:44:00"]
     probe = "1"
     # probe = "1"
     data_rate = "brst"
@@ -66,6 +65,6 @@ if __name__ == "__main__":
     plot(k, y)
 
     gen_fmt = dt.strftime(dt.now(), "%H%M%S_%a%d%b")
-    plt.title(f"Generated: {gen_fmt}")
+    # plt.title(f"Generated: {gen_fmt}")
     plt.savefig(f"src/magSpec/fsm_magSpec_{gen_fmt}.png")
     plt.show()
