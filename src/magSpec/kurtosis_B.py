@@ -15,6 +15,7 @@ time_dist = data_quants["mms1_fsm_b_gse_brst_l3"].coords["time"].values
 
 windows = 35
 width = len(time_dist) // windows
+# width = int(1e5)
 
 kurtosisss = np.empty((windows, 3), dtype=float)
 x = []
@@ -23,6 +24,11 @@ for i in range(windows):
     kurtosisss[i, :] = kurtosis(data, axis=0, fisher=False)
     x.append(dt.utcfromtimestamp(time_dist[i * width + width // 2]))
 
+plt.subplot(2, 1, 1)
+for i in range(3):
+    plt.plot(time_dist, fsm_B[:, i], color=["r", "g", "b"][i], alpha=0.6)
+
+plt.subplot(2, 1, 2)
 for i in range(3):
     plt.plot(
         x,
@@ -42,4 +48,6 @@ plt.title("Kurtosis of B field")
 plt.ylabel("Kurtosis (3=gaussian)")
 plt.xlabel("Time")
 plt.legend()
-plt.savefig("src/magSpec/img/kurtosis_B_132100_Tue23Feb.png")
+# plt.savefig("src/magSpec/img/kurtosis_B_132100_Tue23Feb.png")
+plt.tight_layout()
+plt.show()
