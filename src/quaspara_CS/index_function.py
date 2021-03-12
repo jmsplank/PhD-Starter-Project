@@ -4,11 +4,15 @@ from math import floor
 import matplotlib.pyplot as plt
 import numpy as np
 import pyspedas
+from phdhelper.helpers import override_mpl as ovr
 from pytplot import data_quants
 from scipy.optimize import curve_fit
 from tqdm import tqdm
+import matplotlib.colors as colors
 
 from auto_grads import lengths
+
+ovr.override()
 
 
 def load_moving(trange, probe, meanv, width=-1, windows=10):
@@ -152,7 +156,7 @@ if __name__ == "__main__":
 
     np.save("src/magSpec/npy/index_function.npy", {"x": x, "out": out})
 
-    whatToPlot = "data"
+    whatToPlot = "vsBtot"
     if whatToPlot == "data":
         plt.plot(x, out)
         for i in range(3):
@@ -182,3 +186,60 @@ if __name__ == "__main__":
             )
             plt.legend()
         plt.show()
+    elif whatToPlot == "vsTemp":
+        for k, scale in zip(range(3), ["inertial", "ion", "electron"]):
+            fig, ax = plt.subplots(2, 2)
+            for i, spec in zip(range(2), ["i", "e"]):
+                for j, dirn in zip(range(2), ["para", "perp"]):
+                    temp = data_quants[f"mms1_d{spec}s_temp{dirn}_brst"].values
+                    temp_time = (
+                        data_quants[f"mms1_d{spec}s_temp{dirn}_brst"]
+                        .coords["time"]
+                        .values
+                    )
+                    temp2 = np.interp(x, temp_time, temp)
+                    ax[i, j].hist2d(
+                        temp2,
+                        out[:, k],
+                        bins=20,
+                        norm=colors.LogNorm(vmin=0.1, vmax=15),
+                    )
+                    ax[i, j].set_xlabel(f"{spec} - {dirn}")
+                    ax[i, j].set_ylabel(f"Spectral index - {scale} scale")
+            plt.tight_layout()
+            plt.savefig(f"src/quaspara_CS/img/210312_vsT_{scale}")
+    elif whatToPlot == "vsVx":
+        for k, scale in zip(range(3), ["inertial", "ion", "electron"]):
+            fig, ax = plt.subplots(2, 1)
+            for i, spec in zip(range(2), ["i", "e"]):
+                vx = data_quants[f"mms1_d{spec}s_bulkv_gse_brst"].values[:, 0]
+                vx_time = (
+                    data_quants[f"mms1_d{spec}s_bulkv_gse_brst"].coords["time"].values
+                )
+                vx2 = np.interp(x, vx_time, vx)
+                ax[i].hist2d(
+                    vx2,
+                    out[:, k],
+                    bins=20,
+                    norm=colors.LogNorm(vmin=0.1, vmax=15),
+                )
+                ax[i].set_xlabel(f"V{spec}_x")
+                ax[i].set_ylabel(f"Index - {scale} scale")
+            plt.tight_layout()
+            plt.savefig(f"src/quaspara_CS/img/210312_vsVx_{scale}")
+    elif whatToPlot == "vsBtot":
+        fig, ax = plt.subplots(3, 1, figsize=(6, 8))
+        for k, scale in zip(range(3), ["inertial", "ion", "electron"]):
+            vx = data_quants[f"mms1_fgm_b_gse_brst_l2"].values[:, 3]
+            vx_time = data_quants[f"mms1_fgm_b_gse_brst_l2"].coords["time"].values
+            vx2 = np.interp(x, vx_time, vx)
+            ax[k].hist2d(
+                vx2,
+                out[:, k],
+                bins=20,
+                norm=colors.LogNorm(vmin=0.1, vmax=15),
+            )
+            ax[k].set_xlabel(f"$|B|$")
+            ax[k].set_ylabel(f"Index - {scale} scale")
+        plt.tight_layout()
+        plt.savefig(f"src/quaspara_CS/img/210312_vsBtot_{scale}")

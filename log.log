@@ -1,0 +1,122 @@
+################ Getting time arrays ################
+Loaded variables:
+Epoch
+mms1_fgm_b_gse_brst_l2
+mms1_fgm_b_gsm_brst_l2
+mms1_fgm_b_dmpa_brst_l2
+mms1_fgm_b_bcs_brst_l2
+mms1_fgm_flag_brst_l2
+Epoch_state
+mms1_fgm_r_gse_brst_l2
+mms1_fgm_r_gsm_brst_l2
+mms1_fgm_hirange_brst_l2
+mms1_fgm_bdeltahalf_brst_l2
+mms1_fgm_stemp_brst_l2
+mms1_fgm_etemp_brst_l2
+mms1_fgm_mode_brst_l2
+mms1_fgm_rdeltahalf_brst_l2
+Loaded variables:
+mms1_des_errorflags_brst
+mms1_des_compressionloss_brst
+mms1_des_startdelphi_count_brst
+mms1_des_startdelphi_angle_brst
+mms1_des_sector_despinp_brst
+mms1_des_pitchangdist_lowen_brst
+mms1_des_pitchangdist_miden_brst
+mms1_des_pitchangdist_highen_brst
+mms1_des_energyspectr_px_brst
+mms1_des_energyspectr_mx_brst
+mms1_des_energyspectr_py_brst
+mms1_des_energyspectr_my_brst
+mms1_des_energyspectr_pz_brst
+mms1_des_energyspectr_mz_brst
+mms1_des_energyspectr_par_brst
+mms1_des_energyspectr_anti_brst
+mms1_des_energyspectr_perp_brst
+mms1_des_energyspectr_omni_brst
+mms1_des_numberdensity_brst
+mms1_des_densityextrapolation_low_brst
+mms1_des_densityextrapolation_high_brst
+mms1_des_bulkv_dbcs_brst
+mms1_des_bulkv_spintone_dbcs_brst
+mms1_des_bulkv_gse_brst
+mms1_des_bulkv_spintone_gse_brst
+mms1_des_prestensor_dbcs_brst
+mms1_des_prestensor_gse_brst
+mms1_des_temptensor_dbcs_brst
+mms1_des_temptensor_gse_brst
+mms1_des_heatq_dbcs_brst
+mms1_des_heatq_gse_brst
+mms1_des_temppara_brst
+mms1_des_tempperp_brst
+mms1_dis_errorflags_brst
+mms1_dis_compressionloss_brst
+mms1_dis_startdelphi_count_brst
+mms1_dis_startdelphi_angle_brst
+mms1_dis_sector_despinp_brst
+mms1_dis_energyspectr_px_brst
+mms1_dis_energyspectr_mx_brst
+mms1_dis_energyspectr_py_brst
+mms1_dis_energyspectr_my_brst
+mms1_dis_energyspectr_pz_brst
+mms1_dis_energyspectr_mz_brst
+mms1_dis_energyspectr_omni_brst
+mms1_dis_spectr_bg_brst
+mms1_dis_numberdensity_bg_brst
+mms1_dis_numberdensity_brst
+mms1_dis_densityextrapolation_low_brst
+mms1_dis_densityextrapolation_high_brst
+mms1_dis_bulkv_dbcs_brst
+mms1_dis_bulkv_spintone_dbcs_brst
+mms1_dis_bulkv_gse_brst
+mms1_dis_bulkv_spintone_gse_brst
+mms1_dis_prestensor_dbcs_brst
+mms1_dis_prestensor_gse_brst
+mms1_dis_pres_bg_brst
+mms1_dis_temptensor_dbcs_brst
+mms1_dis_temptensor_gse_brst
+mms1_dis_heatq_dbcs_brst
+mms1_dis_heatq_gse_brst
+mms1_dis_temppara_brst
+mms1_dis_tempperp_brst
+Loaded variables:
+mms1_dis_errorflags_brst
+mms1_dis_compressionloss_brst
+mms1_dis_steptable_parity_brst
+mms1_dis_startdelphi_count_brst
+mms1_dis_startdelphi_angle_brst
+mms1_dis_dist_brst
+mms1_dis_disterr_brst
+mms1_dis_sector_despinp_brst
+################ Getting B field ################
+################ Getting ion velocity ################
+################ Getting energy spectrum ################
+################ Calculating background flow speed ################
+################ Calculating Alfven speed ################
+################ Calculating plasma betas ################
+################ Calculating gyroradius ################
+################ Calculating Intertial length ################
+
+==================================
+EventSummary: 
+    trange -> ['2020-03-18/02:25:30', '2020-03-18/02:44:00']
+    probe  -> 1
+----------------------------------
+
+Time Arrays:
+    time_B -> len 152192
+    time_V -> len 7932
+    time_E -> len 7932
+
+Parameters:
+    mean B -> 1.34e+01nT
+    Background flow speed -> 2.64e+02km/s
+    Alfven speed -> 2.96e-12km/s
+    Plasma beta (ion) -> 1.04e-22
+    Plasma beta (e) -> 1.08e-22
+    Gyroradios (ion) -> 1.49e+02km
+    Gyroradios (e) -> 3.47e+00km
+    Inertial length (ion) -> 5.64e-02km
+    Inertial length (ion) -> 1.29e-03km
+==================================
+

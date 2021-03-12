@@ -6,6 +6,10 @@ import numpy as np
 from scipy.signal import correlate, correlation_lags
 import matplotlib.pyplot as plt
 
+from phdhelper.helpers import override_mpl as ovr
+
+ovr.override()
+
 
 def load_interval(trange, probe):
     data_rate = "brst"
@@ -70,8 +74,7 @@ def get_stop(data):
 
 
 if __name__ == "__main__":
-    # trange = ["2016-12-09/09:01:36", "2016-12-09/09:07:00"]  # Interval 1
-    trange = ["2016-12-09/09:26:24", "2016-12-09/09:34:58"]  # Interval 2
+    trange = ["2020-03-18/02:25:30", "2020-03-18/02:44:00"]
     probe = "1"
 
     summary = {}
@@ -88,54 +91,27 @@ if __name__ == "__main__":
     plt.plot(
         x,
         y,
-        color="skyblue",
         label=r"2: $\int R \equiv \lambda_c = {:.2f}$".format(summary["I1I"]),
     )
     plt.plot(
         x[:stop],
         lfit[1],
         ls="--",
-        color="skyblue",
         label=r"2: $R\propto\exp(-l/\lambda_c) \Rightarrow \lambda_c = {:.2f}$".format(
             summary["I1F"]
         ),
     )
 
-    trange = ["2016-12-09/09:01:36", "2016-12-09/09:07:00"]  # Interval 1
-    td, data = load_interval(trange, probe)
-    meanv = 242
-    d_i = 50
-    x, y = corr_xyz(data, meanv, d_i, td)
-    stop = get_stop(y)
-    lfit = fit(y, x, stop, exp)
-    summary["I2F"] = lfit[0]
-    summary["I2I"] = np.trapz(y[:stop], x[:stop])
-
-    plt.plot(
-        x,
-        y,
-        color="green",
-        label=r"1:$\int R \equiv \lambda_c = {:.2f}$".format(summary["I2I"]),
-    )
-    plt.plot(
-        x[:stop],
-        lfit[1],
-        ls="--",
-        color="green",
-        label=r"1: $R\propto\exp(-l/\lambda_c) \Rightarrow \lambda_c = {:.2f}$".format(
-            summary["I2F"]
-        ),
-    )
-
     print(summary)
 
-    plt.hlines(0, 0, 80)
-    plt.xlim((0, 80))
-    plt.ylim((-0.1, 1))
+    plt.hlines(0, 0, 70)
+    plt.xlim((0, 70))
+    # plt.ylim((-0.1, 1))
     plt.legend()
-    plt.grid()
+    # plt.grid()
     plt.tight_layout()
     # plt.show()
     tstr = dt.strftime(dt.now(), "%H%M%S_%a%d%b")
-    # plt.savefig(f"src/magSpec/img/correlationLength_{tstr}.png")
+
+    plt.savefig("src/quaspara_CS/img/210312_correlation_length.png")
     plt.show()
