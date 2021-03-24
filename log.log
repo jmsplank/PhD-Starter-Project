@@ -1,4 +1,3 @@
-################ Getting time arrays ################
 Loaded variables:
 Epoch
 mms1_fgm_b_gse_brst_l2
@@ -79,44 +78,271 @@ mms1_dis_heatq_dbcs_brst
 mms1_dis_heatq_gse_brst
 mms1_dis_temppara_brst
 mms1_dis_tempperp_brst
-Loaded variables:
-mms1_dis_errorflags_brst
-mms1_dis_compressionloss_brst
-mms1_dis_steptable_parity_brst
-mms1_dis_startdelphi_count_brst
-mms1_dis_startdelphi_angle_brst
-mms1_dis_dist_brst
-mms1_dis_disterr_brst
-mms1_dis_sector_despinp_brst
-################ Getting B field ################
-################ Getting ion velocity ################
-################ Getting energy spectrum ################
-################ Calculating background flow speed ################
-################ Calculating Alfven speed ################
-################ Calculating plasma betas ################
-################ Calculating gyroradius ################
-################ Calculating Intertial length ################
-
-==================================
-EventSummary: 
-    trange -> ['2020-03-18/02:25:30', '2020-03-18/02:44:00']
-    probe  -> 1
-----------------------------------
-
-Time Arrays:
-    time_B -> len 152192
-    time_V -> len 7932
-    time_E -> len 7932
-
-Parameters:
-    mean B -> 1.34e+01nT
-    Background flow speed -> 2.64e+02km/s
-    Alfven speed -> 2.96e-12km/s
-    Plasma beta (ion) -> 1.04e-22
-    Plasma beta (e) -> 1.08e-22
-    Gyroradios (ion) -> 1.49e+02km
-    Gyroradios (e) -> 3.47e+00km
-    Inertial length (ion) -> 5.64e-02km
-    Inertial length (ion) -> 1.29e-03km
-==================================
-
+dt 0.007812738418579102
+152192
+Splitting 152192 measurements every 4.5s into ~264 steps (non-overlapping)
+window 0 | meanv 253.96 | d_i 46.76 | corr_len 3.68
+window 576 | meanv 311.94 | d_i 45.57 | corr_len 4.69
+window 1152 | meanv 236.28 | d_i 47.06 | corr_len 3.10
+window 1728 | meanv 267.04 | d_i 49.22 | corr_len 1.76
+window 2304 | meanv 278.01 | d_i 54.40 | corr_len 1.61
+window 2880 | meanv 225.05 | d_i 51.22 | corr_len 1.60
+window 3456 | meanv 252.08 | d_i 55.07 | corr_len 1.94
+window 4032 | meanv 191.66 | d_i 45.40 | corr_len 2.50
+window 4608 | meanv 269.39 | d_i 54.03 | corr_len 2.68
+window 5184 | meanv 256.85 | d_i 49.74 | corr_len 2.10
+window 5760 | meanv 281.07 | d_i 52.61 | corr_len 3.78
+window 6336 | meanv 295.86 | d_i 53.19 | corr_len 4.70
+window 6912 | meanv 238.56 | d_i 53.26 | corr_len 1.68
+window 7488 | meanv 214.05 | d_i 56.19 | corr_len 1.17
+window 8064 | meanv 203.97 | d_i 53.34 | corr_len 1.46
+window 8640 | meanv 206.14 | d_i 53.32 | corr_len 1.10
+window 9216 | meanv 219.55 | d_i 52.08 | corr_len 2.69
+window 9792 | meanv 245.34 | d_i 55.54 | corr_len 1.84
+window 10368 | meanv 256.13 | d_i 59.62 | corr_len 2.26
+window 10944 | meanv 240.73 | d_i 57.92 | corr_len 1.97
+window 11520 | meanv 254.43 | d_i 50.57 | corr_len 1.75
+window 12096 | meanv 245.19 | d_i 52.64 | corr_len 2.39
+window 12672 | meanv 267.11 | d_i 53.47 | corr_len 2.16
+window 13248 | meanv 310.15 | d_i 49.62 | corr_len 4.77
+window 13824 | meanv 312.99 | d_i 50.03 | corr_len 2.28
+window 14400 | meanv 274.46 | d_i 56.02 | corr_len 2.17
+window 14976 | meanv 247.67 | d_i 55.80 | corr_len 1.66
+window 15552 | meanv 256.06 | d_i 44.32 | corr_len 1.69
+window 16128 | meanv 241.81 | d_i 44.21 | corr_len 1.76
+window 16704 | meanv 253.47 | d_i 49.47 | corr_len 2.82
+window 17280 | meanv 207.53 | d_i 48.20 | corr_len 2.63
+window 17856 | meanv 266.36 | d_i 50.60 | corr_len 2.32
+window 18432 | meanv 283.36 | d_i 50.48 | corr_len 2.37
+window 19008 | meanv 267.96 | d_i 53.02 | corr_len 3.08
+window 19584 | meanv 206.62 | d_i 55.27 | corr_len 2.47
+window 20160 | meanv 194.75 | d_i 50.99 | corr_len 1.75
+window 20736 | meanv 217.30 | d_i 53.73 | corr_len 2.81
+window 21312 | meanv 229.36 | d_i 53.65 | corr_len 2.55
+window 21888 | meanv 258.77 | d_i 53.69 | corr_len 2.60
+window 22464 | meanv 269.48 | d_i 50.30 | corr_len 3.32
+window 23040 | meanv 264.30 | d_i 48.77 | corr_len 1.96
+window 23616 | meanv 234.68 | d_i 59.00 | corr_len 1.02
+window 24192 | meanv 233.29 | d_i 53.21 | corr_len 3.10
+window 24768 | meanv 245.41 | d_i 53.71 | corr_len 2.12
+window 25344 | meanv 286.82 | d_i 53.66 | corr_len 2.59
+window 25920 | meanv 307.19 | d_i 55.07 | corr_len 2.68
+window 26496 | meanv 261.42 | d_i 60.48 | corr_len 2.09
+window 27072 | meanv 240.58 | d_i 54.91 | corr_len 2.05
+window 27648 | meanv 311.84 | d_i 55.89 | corr_len 2.17
+window 28224 | meanv 283.74 | d_i 52.84 | corr_len 2.94
+window 28800 | meanv 231.88 | d_i 52.83 | corr_len 2.28
+window 29376 | meanv 243.15 | d_i 52.11 | corr_len 2.88
+window 29952 | meanv 211.02 | d_i 45.96 | corr_len 1.44
+window 30528 | meanv 184.44 | d_i 46.75 | corr_len 2.73
+window 31104 | meanv 216.41 | d_i 46.95 | corr_len 2.22
+window 31680 | meanv 258.89 | d_i 45.65 | corr_len 2.56
+window 32256 | meanv 276.64 | d_i 47.79 | corr_len 3.30
+window 32832 | meanv 234.10 | d_i 46.47 | corr_len 1.98
+window 33408 | meanv 268.91 | d_i 57.20 | corr_len 2.71
+window 33984 | meanv 256.15 | d_i 56.04 | corr_len 1.45
+window 34560 | meanv 292.72 | d_i 54.92 | corr_len 3.92
+window 35136 | meanv 298.84 | d_i 56.01 | corr_len 2.53
+window 35712 | meanv 294.03 | d_i 58.78 | corr_len 3.24
+window 36288 | meanv 256.35 | d_i 52.36 | corr_len 3.40
+window 36864 | meanv 242.72 | d_i 47.26 | corr_len 1.78
+window 37440 | meanv 213.79 | d_i 51.72 | corr_len 1.59
+window 38016 | meanv 232.17 | d_i 54.95 | corr_len 2.36
+window 38592 | meanv 256.39 | d_i 67.90 | corr_len 2.01
+window 39168 | meanv 259.33 | d_i 63.01 | corr_len 2.72
+window 39744 | meanv 257.77 | d_i 56.19 | corr_len 2.24
+window 40320 | meanv 238.46 | d_i 44.22 | corr_len 3.05
+window 40896 | meanv 276.54 | d_i 48.01 | corr_len 4.10
+window 41472 | meanv 210.76 | d_i 51.05 | corr_len 2.20
+window 42048 | meanv 231.79 | d_i 56.42 | corr_len 2.34
+window 42624 | meanv 272.22 | d_i 54.14 | corr_len 4.28
+window 43200 | meanv 257.73 | d_i 43.36 | corr_len 4.12
+window 43776 | meanv 299.58 | d_i 42.04 | corr_len 3.66
+window 44352 | meanv 320.28 | d_i 44.29 | corr_len 2.56
+window 44928 | meanv 294.22 | d_i 52.57 | corr_len 1.17
+window 45504 | meanv 296.05 | d_i 50.04 | corr_len 2.29
+window 46080 | meanv 339.14 | d_i 56.61 | corr_len 1.68
+window 46656 | meanv 333.13 | d_i 57.37 | corr_len 2.60
+window 47232 | meanv 320.94 | d_i 63.89 | corr_len 1.33
+window 47808 | meanv 322.10 | d_i 61.82 | corr_len 1.04
+window 48384 | meanv 334.85 | d_i 69.59 | corr_len 1.27
+window 48960 | meanv 321.86 | d_i 65.68 | corr_len 3.06
+window 49536 | meanv 322.26 | d_i 68.27 | corr_len 1.72
+window 50112 | meanv 326.32 | d_i 76.09 | corr_len 1.49
+window 50688 | meanv 344.72 | d_i 64.72 | corr_len 1.76
+window 51264 | meanv 261.69 | d_i 62.39 | corr_len 1.78
+window 51840 | meanv 274.07 | d_i 60.56 | corr_len 3.31
+window 52416 | meanv 347.63 | d_i 61.80 | corr_len 2.14
+window 52992 | meanv 357.35 | d_i 79.56 | corr_len 0.72
+window 53568 | meanv 359.63 | d_i 84.95 | corr_len 1.06
+window 54144 | meanv 343.67 | d_i 66.62 | corr_len 1.77
+window 54720 | meanv 337.92 | d_i 73.35 | corr_len 1.14
+window 55296 | meanv 311.18 | d_i 75.20 | corr_len 1.13
+window 55872 | meanv 322.91 | d_i 86.66 | corr_len 0.81
+window 56448 | meanv 292.43 | d_i 82.44 | corr_len 1.32
+window 57024 | meanv 304.24 | d_i 72.02 | corr_len 1.74
+window 57600 | meanv 294.18 | d_i 62.83 | corr_len 2.33
+window 58176 | meanv 322.63 | d_i 61.42 | corr_len 2.78
+window 58752 | meanv 314.46 | d_i 62.54 | corr_len 3.17
+window 59328 | meanv 259.85 | d_i 54.74 | corr_len 2.40
+window 59904 | meanv 225.38 | d_i 48.16 | corr_len 1.82
+window 60480 | meanv 247.37 | d_i 44.41 | corr_len 2.50
+window 61056 | meanv 296.37 | d_i 47.96 | corr_len 1.72
+window 61632 | meanv 359.77 | d_i 47.75 | corr_len 2.63
+window 62208 | meanv 348.20 | d_i 52.94 | corr_len 2.37
+window 62784 | meanv 333.87 | d_i 52.63 | corr_len 3.27
+window 63360 | meanv 325.38 | d_i 48.42 | corr_len 4.70
+window 63936 | meanv 312.95 | d_i 50.09 | corr_len 3.45
+window 64512 | meanv 283.75 | d_i 50.60 | corr_len 3.92
+window 65088 | meanv 243.21 | d_i 49.55 | corr_len 1.41
+window 65664 | meanv 291.19 | d_i 69.37 | corr_len 0.96
+window 66240 | meanv 354.90 | d_i 94.65 | corr_len 0.77
+window 66816 | meanv 367.85 | d_i 77.11 | corr_len 1.22
+window 67392 | meanv 394.33 | d_i 76.46 | corr_len 1.56
+window 67968 | meanv 344.76 | d_i 81.43 | corr_len 1.75
+window 68544 | meanv 349.72 | d_i 82.70 | corr_len 1.64
+window 69120 | meanv 356.07 | d_i 77.46 | corr_len 1.64
+window 69696 | meanv 334.13 | d_i 81.96 | corr_len 1.55
+window 70272 | meanv 315.53 | d_i 62.33 | corr_len 1.66
+window 70848 | meanv 262.99 | d_i 53.63 | corr_len 1.90
+window 71424 | meanv 294.83 | d_i 45.68 | corr_len 4.60
+window 72000 | meanv 312.18 | d_i 50.57 | corr_len 4.00
+window 72576 | meanv 308.86 | d_i 57.30 | corr_len 1.62
+window 73152 | meanv 272.92 | d_i 56.62 | corr_len 2.67
+window 73728 | meanv 277.01 | d_i 46.35 | corr_len 1.92
+window 74304 | meanv 258.34 | d_i 46.20 | corr_len 2.36
+window 74880 | meanv 271.39 | d_i 57.84 | corr_len 2.19
+window 75456 | meanv 189.87 | d_i 57.64 | corr_len 1.21
+window 76032 | meanv 230.56 | d_i 51.48 | corr_len 2.17
+window 76608 | meanv 258.23 | d_i 51.65 | corr_len 2.16
+window 77184 | meanv 253.45 | d_i 54.37 | corr_len 3.66
+window 77760 | meanv 210.47 | d_i 59.36 | corr_len 1.67
+window 78336 | meanv 200.76 | d_i 60.95 | corr_len 1.06
+window 78912 | meanv 204.95 | d_i 62.03 | corr_len 1.32
+window 79488 | meanv 209.01 | d_i 59.32 | corr_len 2.19
+window 80064 | meanv 211.12 | d_i 56.93 | corr_len 2.18
+window 80640 | meanv 211.26 | d_i 56.22 | corr_len 1.45
+window 81216 | meanv 214.11 | d_i 49.32 | corr_len 1.88
+window 81792 | meanv 259.32 | d_i 50.51 | corr_len 2.11
+window 82368 | meanv 299.19 | d_i 76.15 | corr_len 1.25
+window 82944 | meanv 303.49 | d_i 57.13 | corr_len 3.09
+window 83520 | meanv 305.61 | d_i 63.94 | corr_len 1.39
+window 84096 | meanv 345.60 | d_i 80.96 | corr_len 1.47
+window 84672 | meanv 347.77 | d_i 82.56 | corr_len 1.80
+window 85248 | meanv 325.24 | d_i 87.45 | corr_len 0.97
+window 85824 | meanv 263.84 | d_i 84.30 | corr_len 1.31
+window 86400 | meanv 254.22 | d_i 66.48 | corr_len 1.24
+window 86976 | meanv 303.67 | d_i 78.72 | corr_len 0.98
+window 87552 | meanv 390.21 | d_i 105.51 | corr_len 0.64
+window 88128 | meanv 360.84 | d_i 81.41 | corr_len 0.95
+window 88704 | meanv 316.81 | d_i 75.27 | corr_len 1.30
+window 89280 | meanv 252.23 | d_i 91.02 | corr_len 1.12
+window 89856 | meanv 274.75 | d_i 72.93 | corr_len 0.90
+window 90432 | meanv 278.60 | d_i 59.94 | corr_len 3.21
+window 91008 | meanv 293.52 | d_i 59.50 | corr_len 2.64
+window 91584 | meanv 241.84 | d_i 68.27 | corr_len 1.88
+window 92160 | meanv 221.44 | d_i 62.33 | corr_len 1.98
+window 92736 | meanv 259.51 | d_i 51.86 | corr_len 1.16
+window 93312 | meanv 267.72 | d_i 59.39 | corr_len 2.01
+window 93888 | meanv 240.57 | d_i 66.68 | corr_len 2.22
+window 94464 | meanv 219.72 | d_i 63.73 | corr_len 1.21
+window 95040 | meanv 210.40 | d_i 62.11 | corr_len 1.67
+window 95616 | meanv 218.40 | d_i 62.81 | corr_len 1.80
+window 96192 | meanv 213.19 | d_i 66.80 | corr_len 2.39
+window 96768 | meanv 192.97 | d_i 64.86 | corr_len 1.36
+window 97344 | meanv 215.74 | d_i 69.99 | corr_len 1.56
+window 97920 | meanv 236.62 | d_i 53.54 | corr_len 1.48
+window 98496 | meanv 309.94 | d_i 75.86 | corr_len 1.10
+window 99072 | meanv 306.96 | d_i 55.43 | corr_len 2.33
+window 99648 | meanv 291.64 | d_i 45.51 | corr_len 2.17
+window 100224 | meanv 247.38 | d_i 50.38 | corr_len 1.27
+window 100800 | meanv 280.98 | d_i 57.15 | corr_len 3.26
+window 101376 | meanv 293.25 | d_i 61.79 | corr_len 2.48
+window 101952 | meanv 267.95 | d_i 65.94 | corr_len 1.93
+window 102528 | meanv 241.82 | d_i 58.70 | corr_len 1.47
+window 103104 | meanv 306.93 | d_i 55.64 | corr_len 3.81
+window 103680 | meanv 333.82 | d_i 58.47 | corr_len 2.32
+window 104256 | meanv 351.14 | d_i 66.61 | corr_len 1.47
+window 104832 | meanv 330.58 | d_i 49.54 | corr_len 1.79
+window 105408 | meanv 322.45 | d_i 46.11 | corr_len 1.77
+window 105984 | meanv 312.80 | d_i 50.45 | corr_len 2.97
+window 106560 | meanv 297.33 | d_i 48.25 | corr_len 1.86
+window 107136 | meanv 279.52 | d_i 51.87 | corr_len 2.28
+window 107712 | meanv 297.67 | d_i 65.57 | corr_len 1.30
+window 108288 | meanv 307.57 | d_i 67.01 | corr_len 1.45
+window 108864 | meanv 340.57 | d_i 70.95 | corr_len 2.58
+window 109440 | meanv 365.11 | d_i 82.90 | corr_len 1.12
+window 110016 | meanv 371.16 | d_i 81.71 | corr_len 1.62
+window 110592 | meanv 347.97 | d_i 77.19 | corr_len 1.43
+window 111168 | meanv 299.13 | d_i 77.68 | corr_len 2.93
+window 111744 | meanv 341.32 | d_i 100.98 | corr_len 1.20
+window 112320 | meanv 285.54 | d_i 81.19 | corr_len 0.59
+window 112896 | meanv 288.84 | d_i 68.01 | corr_len 0.77
+window 113472 | meanv 293.13 | d_i 57.25 | corr_len 3.02
+window 114048 | meanv 348.14 | d_i 68.65 | corr_len 0.91
+window 114624 | meanv 302.30 | d_i 56.90 | corr_len 3.45
+window 115200 | meanv 284.58 | d_i 45.74 | corr_len 2.37
+window 115776 | meanv 355.77 | d_i 51.57 | corr_len 3.17
+window 116352 | meanv 364.42 | d_i 47.61 | corr_len 2.93
+window 116928 | meanv 331.94 | d_i 49.29 | corr_len 4.88
+window 117504 | meanv 267.50 | d_i 55.15 | corr_len 2.93
+window 118080 | meanv 248.49 | d_i 49.45 | corr_len 2.21
+window 118656 | meanv 244.14 | d_i 50.34 | corr_len 1.73
+window 119232 | meanv 237.56 | d_i 56.89 | corr_len 2.27
+window 119808 | meanv 224.74 | d_i 57.12 | corr_len 1.54
+window 120384 | meanv 234.64 | d_i 57.27 | corr_len 1.12
+window 120960 | meanv 238.08 | d_i 58.54 | corr_len 2.11
+window 121536 | meanv 245.05 | d_i 60.18 | corr_len 1.86
+window 122112 | meanv 259.87 | d_i 62.02 | corr_len 2.22
+window 122688 | meanv 280.57 | d_i 54.98 | corr_len 2.71
+window 123264 | meanv 242.09 | d_i 58.12 | corr_len 2.80
+window 123840 | meanv 223.92 | d_i 50.57 | corr_len 1.16
+window 124416 | meanv 279.99 | d_i 51.76 | corr_len 3.34
+window 124992 | meanv 252.63 | d_i 55.60 | corr_len 1.98
+window 125568 | meanv 227.96 | d_i 58.88 | corr_len 1.46
+window 126144 | meanv 218.36 | d_i 58.42 | corr_len 1.94
+window 126720 | meanv 229.99 | d_i 60.14 | corr_len 2.84
+window 127296 | meanv 238.30 | d_i 58.23 | corr_len 1.94
+window 127872 | meanv 249.34 | d_i 58.87 | corr_len 2.49
+window 128448 | meanv 256.00 | d_i 58.17 | corr_len 1.63
+window 129024 | meanv 243.67 | d_i 56.71 | corr_len 1.81
+window 129600 | meanv 232.00 | d_i 46.52 | corr_len 3.55
+window 130176 | meanv 250.35 | d_i 49.07 | corr_len 3.86
+window 130752 | meanv 247.73 | d_i 51.70 | corr_len 3.08
+window 131328 | meanv 224.13 | d_i 54.67 | corr_len 2.14
+window 131904 | meanv 192.90 | d_i 57.44 | corr_len 2.49
+window 132480 | meanv 191.02 | d_i 59.14 | corr_len 1.84
+window 133056 | meanv 196.21 | d_i 58.48 | corr_len 2.09
+window 133632 | meanv 197.34 | d_i 58.22 | corr_len 1.98
+window 134208 | meanv 209.02 | d_i 55.22 | corr_len 2.41
+window 134784 | meanv 205.16 | d_i 56.46 | corr_len 1.29
+window 135360 | meanv 221.98 | d_i 60.45 | corr_len 2.56
+window 135936 | meanv 219.18 | d_i 59.78 | corr_len 1.35
+window 136512 | meanv 221.78 | d_i 58.49 | corr_len 2.38
+window 137088 | meanv 228.60 | d_i 59.28 | corr_len 3.02
+window 137664 | meanv 228.10 | d_i 60.84 | corr_len 1.82
+window 138240 | meanv 237.09 | d_i 61.82 | corr_len 1.89
+window 138816 | meanv 245.92 | d_i 60.45 | corr_len 2.11
+window 139392 | meanv 228.20 | d_i 58.88 | corr_len 1.67
+window 139968 | meanv 261.12 | d_i 59.74 | corr_len 2.97
+window 140544 | meanv 255.94 | d_i 56.79 | corr_len 2.11
+window 141120 | meanv 207.30 | d_i 72.19 | corr_len 1.92
+window 141696 | meanv 181.49 | d_i 86.71 | corr_len 0.68
+window 142272 | meanv 184.97 | d_i 56.24 | corr_len 2.59
+window 142848 | meanv 198.64 | d_i 51.76 | corr_len 1.87
+window 143424 | meanv 217.50 | d_i 44.99 | corr_len 1.90
+window 144000 | meanv 181.54 | d_i 45.03 | corr_len 1.67
+window 144576 | meanv 152.37 | d_i 45.63 | corr_len 2.59
+window 145152 | meanv 162.15 | d_i 46.72 | corr_len 2.00
+window 145728 | meanv 172.17 | d_i 51.96 | corr_len 1.58
+window 146304 | meanv 136.35 | d_i 47.49 | corr_len 1.69
+window 146880 | meanv 118.68 | d_i 48.76 | corr_len 1.43
+window 147456 | meanv 140.59 | d_i 75.05 | corr_len 1.14
+window 148032 | meanv 157.49 | d_i 86.63 | corr_len 1.34
+window 148608 | meanv 162.38 | d_i 81.61 | corr_len 0.87
+window 149184 | meanv 169.76 | d_i 79.61 | corr_len 1.29
+window 149760 | meanv 170.84 | d_i 77.04 | corr_len 1.61
+window 150336 | meanv 162.67 | d_i 74.04 | corr_len 1.30
+window 150912 | meanv 157.93 | d_i 69.68 | corr_len 1.52
+window 151488 | meanv 163.31 | d_i 67.66 | corr_len 1.01
+Generated 264 correlation lengths with a mean of 2.13 meanv: 163.3 km/s | d_i: 67.7 km

@@ -19,7 +19,7 @@ def load_moving(trange, probe, meanv, width=-1, windows=10):
     """Load data as moving window."""
 
     # Load data from CDF
-    pyspedas.mms.fsm(trange=trange, probe=probe, time_clip=True, level="l3")
+    pyspedas.mms.fsm(trange=trange, probe=probe, time_clip=False, level="l3")
 
     # Get data & time from tplot var
     fsm_B = data_quants["mms1_fsm_b_gse_brst_l3"].values
@@ -28,11 +28,12 @@ def load_moving(trange, probe, meanv, width=-1, windows=10):
     # print(td)
 
     # Interpolate over missing data
+    B = np.empty_like(fsm_B)
     for i in range(3):
-        B = fsm_B[:, i] * 10e-09
-        finiteMask = np.isfinite(B)
-        B = np.interp(time_dist, time_dist[finiteMask], B[finiteMask])
-        B -= B.mean()
+        B[:, i] = fsm_B[:, i]
+        finiteMask = np.isfinite(B[:, i])
+        B[:, i] = np.interp(time_dist, time_dist[finiteMask], B[finiteMask, i])
+    fsm_B = B
 
     tot_len = len(fsm_B)
 
@@ -137,7 +138,8 @@ def fit_lines(k, data, ilim, elim, ins_lim):
 
 
 if __name__ == "__main__":
-    trange = ["2020-03-18/02:25:30", "2020-03-18/02:44:00"]
+    # trange = ["2020-03-18/02:25:30", "2020-03-18/02:44:00"]
+    trange = ["2020-03-18/02:05:00", "2020-03-18/02:44:00"]
     probe = "1"
     # probe = "1"
     data_rate = "brst"
@@ -156,12 +158,12 @@ if __name__ == "__main__":
 
     np.save("src/magSpec/npy/index_function.npy", {"x": x, "out": out})
 
-    whatToPlot = "vsBtot"
+    whatToPlot = "vsCorrLen"
     if whatToPlot == "data":
         plt.plot(x, out)
         for i in range(3):
             plt.plot(x, out[:, i], color=["r", "g", "b"][i])
-        plt.show()
+        plt.savefig("src/quaspara_CS/img/210324_full_data.png")
     elif whatToPlot == "kurtosis":
         from scipy.stats import kurtosis
 
@@ -207,7 +209,7 @@ if __name__ == "__main__":
                     ax[i, j].set_xlabel(f"{spec} - {dirn}")
                     ax[i, j].set_ylabel(f"Spectral index - {scale} scale")
             plt.tight_layout()
-            plt.savefig(f"src/quaspara_CS/img/210312_vsT_{scale}")
+            plt.savefig(f"src/quaspara_CS/img/210324_full_vsT_{scale}")
     elif whatToPlot == "vsVx":
         for k, scale in zip(range(3), ["inertial", "ion", "electron"]):
             fig, ax = plt.subplots(2, 1)
@@ -226,7 +228,7 @@ if __name__ == "__main__":
                 ax[i].set_xlabel(f"V{spec}_x")
                 ax[i].set_ylabel(f"Index - {scale} scale")
             plt.tight_layout()
-            plt.savefig(f"src/quaspara_CS/img/210312_vsVx_{scale}")
+            plt.savefig(f"src/quaspara_CS/img/210324_vsVx_{scale}")
     elif whatToPlot == "vsBtot":
         fig, ax = plt.subplots(3, 1, figsize=(6, 8))
         for k, scale in zip(range(3), ["inertial", "ion", "electron"]):
@@ -242,4 +244,23 @@ if __name__ == "__main__":
             ax[k].set_xlabel(f"$|B|$")
             ax[k].set_ylabel(f"Index - {scale} scale")
         plt.tight_layout()
-        plt.savefig(f"src/quaspara_CS/img/210312_vsBtot_{scale}")
+        plt.savefig(f"src/quaspara_CS/img/210324_vsBtot_{scale}")
+    elif whatToPlot == "vsCorrLen":
+        loaded_data = np.load(
+            "src/quaspara_CS/moving_correlation/mov_corr.npy", allow_pickle=True
+        )[0]
+        corr_lens = loaded_data["corr_lens"]
+        times = loaded_data["times"]
+
+        corr_lens2 = np.interp(x, times, corr_lens)
+        fig, ax = plt.subplots(3, 1)
+        for k, scale in zip(range(3), ["inertial", "ion", "electron"]):
+            ax[k].hist2d(
+                corr_lens2,
+                out[:, k],
+                bins=20,
+                norm=colors.LogNorm(vmin=0.1, vmax=15),
+            )
+            ax[k].set_ylabel(f"Index - {scale} scale")
+        plt.tight_layout()
+        plt.savefig(f"src/quaspara_CS/img/210324_vsCorrLen.png")

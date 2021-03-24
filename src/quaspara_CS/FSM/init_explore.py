@@ -11,7 +11,7 @@ import phdhelper.helpers.override_mpl as ovr
 
 ovr.override()
 
-trange = ["2020-03-18/02:25:30", "2020-03-18/02:44:00"]
+trange = ["2020-03-18/02:05:00", "2020-03-18/02:44:00"]
 probe = "1"
 
 summary = Event(trange=trange, probe=probe, required_instruments="FGM|FPI")

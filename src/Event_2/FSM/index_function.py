@@ -27,12 +27,12 @@ def load_moving(trange, probe, meanv, width=-1, windows=10):
     td = time_dist[1] - time_dist[0]
     # print(td)
 
-    # Interpolate over missing data
-    for i in range(3):
-        B = fsm_B[:, i] * 10e-09
-        finiteMask = np.isfinite(B)
-        B = np.interp(time_dist, time_dist[finiteMask], B[finiteMask])
-        B -= B.mean()
+    # # Interpolate over missing data
+    # for i in range(3):
+    #     B = fsm_B[:, i] * 10e-09
+    #     finiteMask = np.isfinite(B)
+    #     B = np.interp(time_dist, time_dist[finiteMask], B[finiteMask])
+    #     B -= B.mean()
 
     tot_len = len(fsm_B)
 
@@ -58,9 +58,7 @@ def load_moving(trange, probe, meanv, width=-1, windows=10):
     for a, i in tqdm(
         zip(range(windows), np.linspace(0, tot_len - N, windows, dtype=int))
     ):
-        # print(f"{a+1}/{windows} => {i}:{i+N}/{tot_len}")
         ft = fft(i, fsm_B, N, Hann, T, td)
-        # print(f"FFT done: length({len(ft)})")
         out[a, :] = split_and_fit(k, ft, ilim, elim, ins_lim)
 
     t_cent = time_dist[np.linspace(0, tot_len - N, windows, dtype=int) + N // 2]
@@ -137,9 +135,8 @@ def fit_lines(k, data, ilim, elim, ins_lim):
 
 
 if __name__ == "__main__":
-    trange = ["2020-03-18/02:25:30", "2020-03-18/02:44:00"]
+    trange = ["2020-03-18/02:48:00", "2020-03-18/03:09:00"]
     probe = "1"
-    # probe = "1"
     data_rate = "brst"
 
     pyspedas.mms.fpi(trange, probe, data_rate)
@@ -156,12 +153,11 @@ if __name__ == "__main__":
 
     np.save("src/magSpec/npy/index_function.npy", {"x": x, "out": out})
 
-    whatToPlot = "vsBtot"
+    whatToPlot = "data"
     if whatToPlot == "data":
         plt.plot(x, out)
-        for i in range(3):
-            plt.plot(x, out[:, i], color=["r", "g", "b"][i])
-        plt.show()
+        plt.savefig(f"src/Event_2/img/210323_data.png")
+        # plt.show()
     elif whatToPlot == "kurtosis":
         from scipy.stats import kurtosis
 
@@ -226,7 +222,7 @@ if __name__ == "__main__":
                 ax[i].set_xlabel(f"V{spec}_x")
                 ax[i].set_ylabel(f"Index - {scale} scale")
             plt.tight_layout()
-            plt.savefig(f"src/quaspara_CS/img/210312_vsVx_{scale}")
+            plt.savefig(f"src/Event_2/img/210323_vsVx_{scale}")
     elif whatToPlot == "vsBtot":
         fig, ax = plt.subplots(3, 1, figsize=(6, 8))
         for k, scale in zip(range(3), ["inertial", "ion", "electron"]):
@@ -242,4 +238,4 @@ if __name__ == "__main__":
             ax[k].set_xlabel(f"$|B|$")
             ax[k].set_ylabel(f"Index - {scale} scale")
         plt.tight_layout()
-        plt.savefig(f"src/quaspara_CS/img/210312_vsBtot_{scale}")
+        plt.savefig(f"src/Event_2/img/210323_vsBtot_{scale}")
