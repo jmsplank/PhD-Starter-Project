@@ -2,3 +2,6 @@ env/*
 mms_data/*
 .DS_Store
 .vscode/settings.json
+data/
+*.log
+*.npy
