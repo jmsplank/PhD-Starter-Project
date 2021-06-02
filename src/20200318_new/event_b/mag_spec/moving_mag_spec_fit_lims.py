@@ -151,12 +151,15 @@ slope_lims = []
 slope_lims_other = []
 slope_interp = []
 spectra = []
+fsm = []
 
 for bin in tqdm(bin_starts):
     Y = {}
 
     data = big_data[bin : bin + bin_size, :]
     time = big_time[bin : bin + bin_size]
+
+    fsm.append(np.linalg.norm(data, axis=1).mean())
 
     # log.info("Comutping FFT over each coord")
     for i in range(3):
@@ -273,11 +276,13 @@ knots = np.array(knots)
 slope_lims = np.array(slope_lims)
 slope_lims_other = np.array(slope_lims_other)
 slope_interp = np.array(slope_interp)
+fsm = np.array(fsm)
 np.save(f"{path}/grads.npy", grads)
 np.save(f"{path}/times.npy", times)
 np.save(f"{path}/knots.npy", np.array(knots))
 np.save(f"{path}/slope_interp.npy", np.array(slope_interp))
 np.save(f"{path}/spectra.npy", np.array(spectra))
+np.save(f"{path}/fsm_sampled_100.npy", fsm)
 
 fig, ax = plt.subplots(3, 2, gridspec_kw={"width_ratios": [98, 3]})
 ax[0, 0].plot(big_time, np.linalg.norm(big_data, axis=1))
