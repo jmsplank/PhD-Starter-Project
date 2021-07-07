@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from phdhelper.helpers import override_mpl
-from phdhelper.helpers.os_shortcuts import get_path
+from phdhelper.helpers.os_shortcuts import get_path, new_path
 from phdhelper.helpers import COLOURS
 from tqdm import tqdm
 from scipy.stats import kurtosis
@@ -55,9 +55,12 @@ for i, bin in enumerate(tqdm(bin_starts)):  # Loop over windows
     for lag_index, lag in enumerate(lags_array):
         # b(t) - b(t + lag) by rolling array by -lag indices
         increment[:, lag_index] = data_norm - np.roll(data_norm, -lag)
+        increment[-lag:, lag_index] = np.nan
 
-    fourth = np.power(increment, 4).mean(axis=0)  # avg over B
-    second = np.power(increment, 2).mean(axis=0)  # avg over B
+    fourth = np.nanmean(np.power(increment, 4), axis=0)  # avg over B
+    second = np.nanmean(np.power(increment, 2), axis=0)  # avg over B
+
+    # second = np.power(increment, 2).mean(axis=0)  # avg over B
 
     K = fourth / np.power(second, 2)  # ratio of 4th & second moment => kurtosis
     big_K[:, i] = K  # assign kurtosis(lag) to container
@@ -75,7 +78,8 @@ for i, bin in enumerate(tqdm(bin_starts)):  # Loop over windows
             ax[i].plot(lags_array, [fourth, second, K][i])
             ax[i].set_ylabel(["fourth", "second", "K"][i])
             ax[i].set_xscale("log")
-            ax[i].set_yscale("log")
+            if i != 2:
+                ax[i].set_yscale("log")
 
         plt.savefig(f"{path}/log_i_0.png")
         plt.close()
@@ -121,4 +125,5 @@ np.save(f"{path}/bin_times.npy", bin_times)
 np.save(f"{path}/kurt.npy", kurt)
 
 plt.tight_layout()
-plt.show()
+# plt.show()
+plt.savefig(f"{path}/kurtosis.png")

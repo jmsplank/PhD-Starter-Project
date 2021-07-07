@@ -14,7 +14,7 @@ grads_times = np.load(f"{path2}/mag_spec/times.npy")
 corr = np.load(f"{path2}/correlation/corr_lens.npy")
 corr_times = np.load(f"{path2}/correlation/corr_times.npy")
 
-fig, ax = plt.subplots(1, 3, sharex=True, sharey=True, figsize=(10, 4))
+fig, ax = plt.subplots(1, 3, sharex=True, sharey=True, figsize=(6.6, 2.64))
 
 for i in range(3):
     ax[i].hist2d(
@@ -35,8 +35,8 @@ for i in range(3):
         marker="o",
         edgecolors="k",
         facecolors="none",
-        s=30,
-        alpha=0.6,
+        s=12,
+        alpha=0.8,
     )
     ax[i].axhline(-5 / 3)
     ax[i].set_xlim(corr.min() - 4, corr.max() + 4)
@@ -47,5 +47,5 @@ ax[0].set_ylabel("Power law fitted slope")
 ax[1].set_xlabel("Correlation length $[d_i]$")
 
 plt.tight_layout()
-plt.savefig(f"{path}/slope_vs_corr.png")
+plt.savefig(f"{path}/slope_vs_corr.png", dpi=300)
 plt.show()

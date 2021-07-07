@@ -17,6 +17,7 @@ log.basicConfig(
 class Product:
     NUMBERDENSITY = "numberdensity"
     TEMPPERP = "tempperp"
+    TEMPPARA = "temppara"
     BULKV = "bulkv"
 
 
@@ -83,9 +84,16 @@ def download_data(EVENT, INSTRUMENT, SPECIES="", PRODUCT=""):
         elif PRODUCT == Product.TEMPPERP:
             data = data_quants[f"mms1_d{SPECIES}s_tempperp_brst"].values
             time = data_quants[f"mms1_d{SPECIES}s_tempperp_brst"].coords["time"].values
+        elif PRODUCT == Product.TEMPPARA:
+            data = data_quants[f"mms1_d{SPECIES}s_temppara_brst"].values
+            time = data_quants[f"mms1_d{SPECIES}s_temppara_brst"].coords["time"].values
         elif PRODUCT == Product.BULKV:
             data = data_quants[f"mms1_d{SPECIES}s_bulkv_gse_brst"].values
             time = data_quants[f"mms1_d{SPECIES}s_bulkv_gse_brst"].coords["time"].values
+        else:
+            raise NotImplementedError(
+                f"No definition found for PRODUCT == Product.{PRODUCT.upper()}"
+            )
 
     def interp(dat, finite_mask):
         log.warning(
@@ -118,8 +126,15 @@ def download_data(EVENT, INSTRUMENT, SPECIES="", PRODUCT=""):
     log.info(
         f"Saved {dir_name}/data{'_' + PRODUCT if PRODUCT != '' else ''}{'_' + SPECIES if SPECIES != '' else ''}.npy"
     )
-    np.save(f"{dir_name}/time{'_' + SPECIES if SPECIES != '' else ''}.npy", time)
-    log.info(f"Saved {dir_name}/time{'_' + SPECIES if SPECIES != '' else ''}.npy")
+    np.save(
+        f"{dir_name}/time{'_' + PRODUCT if PRODUCT != '' else ''}{'_' + SPECIES if SPECIES != '' else ''}.npy",
+        time,
+    )
+    log.info(
+        f"Saved {dir_name}/time{'_' + PRODUCT if PRODUCT != '' else ''}{'_' + SPECIES if SPECIES != '' else ''}.npy"
+    )
+
+    del data, time
 
 
 if __name__ == "__main__":
@@ -134,3 +149,6 @@ if __name__ == "__main__":
     #         for SPECIES in ["i", "e"]:
     #             for PRODUCT in [Product.NUMBERDENSITY, Product.TEMPPERP, Product.BULKV]:
     #                 download_data(EVENT, INSTRUMENT, SPECIES, PRODUCT)
+    # download_data("b", Instrument.FPI, "e", Product.BULKV)
+    for PRODUCT in [Product.NUMBERDENSITY]:
+        download_data("b", Instrument.FPI, "e", PRODUCT)

@@ -5,3 +5,4 @@ mms_data/*
 data/
 *.log
 *.npy
+anim/

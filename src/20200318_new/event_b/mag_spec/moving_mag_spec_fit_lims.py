@@ -19,6 +19,8 @@ from phdhelper.helpers import override_mpl
 import pandas as pd
 import subprocess
 from datetime import datetime as dt
+from phdhelper.helpers.COLOURS import red, green, blue, mandarin
+from matplotlib.ticker import MaxNLocator
 
 override_mpl.override()
 override_mpl.cmaps(name="custom_diverging")
@@ -115,13 +117,13 @@ big_time = np.load(f"{dirpath}/data/fsm/time.npy")
 td = big_time[1] - big_time[0]
 
 log.info("Loading temp_perp")
-big_temp_perp_e = np.load(f"{dirpath}/data/fpi/data_tempperp_e.npy")
+big_temp_perp_e = np.load(f"{dirpath}/data/fpi/data_tempperp_e.npy")[::2]
 big_temp_perp_i = np.load(f"{dirpath}/data/fpi/data_tempperp_i.npy")
 log.info("Loading number_density")
 big_number_density_e = np.load(f"{dirpath}/data/fpi/data_numberdensity_e.npy")
 big_number_density_i = np.load(f"{dirpath}/data/fpi/data_numberdensity_i.npy")
 log.info("Loading electron time")
-time_e = np.load(f"{dirpath}/data/fpi/time_e.npy")
+time_e = np.load(f"{dirpath}/data/fpi/time_e.npy")[::3]
 log.info("Loading ion time")
 time_i = np.load(f"{dirpath}/data/fpi/time_i.npy")
 log.info("Loading stats")
@@ -195,7 +197,7 @@ for bin in tqdm(bin_starts):
     grads.append(extract_grads(k, y, ion_lim, electron_lim, 10))
     times.append(big_time[bin + bin_size // 2])
 
-    instrument_mask = k < 10
+    instrument_mask = k <= 10
     kk = np.log10(k[instrument_mask])
     yy = np.log10(y[instrument_mask])
 
@@ -203,9 +205,11 @@ for bin in tqdm(bin_starts):
     xx = np.log10(np.logspace(kk[0], kk[-1], num=1000))
     yy = f(xx)
 
+    INTERP_MIN = min(kk)
+    INTERP_MAX = max(kk)
     x_interp = np.linspace(
-        np.log10(4e-4),
-        np.log10(1),
+        INTERP_MIN,
+        INTERP_MAX,
         32,
     )
 
@@ -216,6 +220,7 @@ for bin in tqdm(bin_starts):
     r_df.to_csv(f"{path}/raw_r.csv")
 
     devnull = open(os.devnull, "w")
+    # subprocess.call(f"{path}/mars.r") # Debug show R output
     subprocess.call(f"{path}/mars.r", stdout=devnull, stderr=devnull)
     r_out = pd.read_csv(f"{path}/mars.csv")
     YY = np.array(r_out.y)
@@ -241,29 +246,55 @@ for bin in tqdm(bin_starts):
 
     ks = np.histogram(
         np.log10(slope_k),
-        x_interp,
+        bins=x_interp,
     )[0]
     ks = ks.astype("float")
     ks[ks == 0] = np.nan
     knots.append(ks)
 
-    # plt.loglog(k, y, alpha=0.4)
-    # plt.loglog(10 ** xx, 10 ** YY, "k")
-    # lims = (1e-16, 1)
-    # plt.vlines(slope_k, lims[0], lims[1], "k", alpha=0.4)
-    # plt.legend()
-    # plt.vlines(
-    #     [ion_lim, electron_lim, 10],
-    #     np.min(lims[0]),
-    #     np.max(lims[1]),
-    #     ("red", "green", "blue"),
+    # fig, ax = plt.subplots(
+    #     2, 1, figsize=(6, 5), sharex=True, gridspec_kw={"height_ratios": [75, 25]}
     # )
-    # plt.ylim(lims)
-    # plt.savefig(f"{path}/anim/{bin}.png")
+    # ax[0].loglog(k, y, color="k", label="Magnetic spectrum")
+    # ax[0].loglog(10 ** xx, 10 ** YY, color=mandarin, ls="--", label="MARS fit")
+    # lims = (1e-16, 1)
+    # for subplot in [0, 1]:
+    #     for ks in range(len(slope_k)):
+    #         ax[subplot].axvline(slope_k[ks], color=mandarin, alpha=0.4)
+    #     ax[subplot].axvline(ion_lim, color=red, label=r"Ion limit ($\rho_i$)")
+    #     ax[subplot].axvline(ion_lims[1], color=red, ls="--", label=r"Ion limit ($d_i$)")
+    #     ax[subplot].axvline(electron_lim, color=green, label="Electron limit")
+    #     ax[subplot].axvspan(
+    #         10, k[-1], fc="k", ec=None, alpha=0.1, label="Instrument noise"
+    #     )
+    #     ax[subplot].grid(False)
+
+    # ax[0].set_ylim(lims)
+    # ax[0].set_xlim((k[0], k[-1]))
+    # ax[0].legend(loc="upper right", fontsize=10)
+
+    # plot_slope = slopes_all[len(slopes_all) // 2]
+    # ax[1].loglog(
+    #     k,
+    #     y * (k ** -plot_slope),
+    #     color="k",
+    #     label="Magnetic spectrum",
+    # )
+    # ax[1].set_xlim((k[0], k[-1]))
+
+    # ax[0].set_ylabel(r"Magnetic spectrum [$nT^2Hz^{-1}$]")
+    # ax[1].set_ylabel(rf"Spectrum $\times k^{{{-plot_slope:.2f}}}$")
+    # ax[1].set_xlabel("$k$ [$km^{-1}$]")
+
+    # plt.tight_layout()
+    # plt.subplots_adjust(wspace=0, hspace=0)
+    # plt.savefig(f"{path}/anim/{bin}.png", dpi=300)
     # plt.clf()
+    # del fig, ax
 
     del y
     del Y
+    del YY
     del freq
     del B
     del Hann
@@ -284,39 +315,67 @@ np.save(f"{path}/slope_interp.npy", np.array(slope_interp))
 np.save(f"{path}/spectra.npy", np.array(spectra))
 np.save(f"{path}/fsm_sampled_100.npy", fsm)
 
-fig, ax = plt.subplots(3, 2, gridspec_kw={"width_ratios": [98, 3]})
+fig, ax = plt.subplots(
+    3,
+    2,
+    gridspec_kw={"width_ratios": [98, 3], "height_ratios": [20, 30, 50]},
+    figsize=(6.6, 5),
+)
 ax[0, 0].plot(big_time, np.linalg.norm(big_data, axis=1))
 
 for i in range(3):
     ax[1, 0].plot(
         times,
         grads[:, i],
-        label=["inertial", "ion_rho", "electron_p"][i],
+        label=["Inertial", r"$<\rho_i$", "$<d_e$"][i],
     )
-    ax[1, 0].legend()
+    ax[1, 0].legend(loc="upper right", fontsize=8)
 
 im = ax[2, 0].imshow(
     slope_interp.T,
-    extent=(times[0], times[-1], np.log10(4e-4), np.log10(1)),
+    extent=(times[0], times[-1], INTERP_MIN, INTERP_MAX),
     origin="lower",
     aspect="auto",
-    vmin=-5,
-    vmax=1,
+    vmin=-4.667,
+    vmax=1.333,
     cmap="custom_diverging",
 )
 fig.colorbar(im, cax=ax[2, 1])
 
 ax[2, 0].imshow(
-    knots.T,
-    extent=(times[0], times[-1], np.log10(4e-4), np.log10(1)),
+    knots.T[1:, :],
+    extent=(times[0], times[-1], x_interp[1], INTERP_MAX),
     origin="lower",
     aspect="auto",
 )
 
 slope_lims[slope_lims == 0] = np.nan
 slope_lims_other[slope_lims_other == 0] = np.nan
-ax[2, 0].plot(times, slope_lims)
-ax[2, 0].plot(times, slope_lims_other)
+ax[2, 0].plot(
+    times,
+    slope_lims[:, 0],
+    label=r"$1/\rho_i$",
+    color="k",
+    lw=1,
+    ls="-.",
+)
+ax[2, 0].plot(
+    times,
+    slope_lims_other[:, 0],
+    label="$1/d_i$",
+    ls="--",
+    color="k",
+    lw=1,
+)
+ax[2, 0].plot(
+    times,
+    slope_lims[:, 1],
+    label=r"$1/\rho_e\approx 1/d_e$",
+    color="k",
+    lw=1,
+)
+
+ax[2, 0].legend(loc="lower right", fontsize=8)
 
 for i in range(2):
     ax[i, 1].axis("off")
@@ -328,23 +387,29 @@ for i in range(2):
         labelbottom=False,
     )
 
-
-ax[0, 0].set_ylabel("$|B|$")
+ax[0, 0].set_ylabel("$|B|$ [$nT$]")
 ax[1, 0].set_ylabel("Slope")
-ax[2, 0].set_ylabel("log k")
+ax[2, 0].set_ylabel(r"log $\left(k/km^{-1}\right)$")
 ax[2, 1].set_ylabel("Slope")
-ax[2, 0].set_xlabel("Time")
+ax[2, 0].set_xlabel("Time UTC 18/03/2020 (hh:mm:ss)")
 
 for i in range(3):
-    ax[i, 0].set_xticks(big_time[:: len(big_time) // 7])
+    ax[i, 0].set_xlim((times[0], times[-1]))
+    ax[i, 0].set_xticks(times[:: len(times) // 7])
     ax[i, 0].set_xticklabels(
         [
             dt.strftime(dt.utcfromtimestamp(a), "%H:%M:%S")
-            for a in big_time[:: len(big_time) // 7]
+            for a in times[:: len(times) // 7]
         ]
     )
 
 ax[0, 0].get_shared_x_axes().join(*[ax[i, 0] for i in range(3)])
 
-plt.tight_layout(pad=0.1)
-plt.show()
+ax[0, 0].yaxis.set_major_locator(MaxNLocator(prune="lower", nbins=4))
+ax[1, 0].yaxis.set_major_locator(MaxNLocator(prune="both", nbins=4))
+ax[2, 0].yaxis.set_major_locator(MaxNLocator(prune="upper"))
+
+plt.tight_layout()
+plt.subplots_adjust(wspace=0.02, hspace=0)
+# plt.show()
+plt.savefig(f"{path}/poster_MAIN_PLOT.png", dpi=300)
